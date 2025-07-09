@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OiPet Mobile - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #EA6B73 0%, #4A9B9B 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .phone-container {
+            width: 375px;
+            height: 667px;
+            background: #000;
+            border-radius: 30px;
+            padding: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: #EA6B73;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .app-content {
+            flex: 1;
+            background: #f8fafc;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: #EA6B73;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #EA6B73;
+        }
+
+        .app-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .tagline {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stats-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1a1a1a;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #EA6B73;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .bottom-nav {
+            height: 80px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+
+        .nav-item:hover {
+            background: #f1f5f9;
+        }
+
+        .nav-item.active {
+            color: #EA6B73;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .demo-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-badge">DEMO</div>
+    
+    <div class="phone-container">
+        <div class="phone-screen">
+            <div class="status-bar">
+                <span>9:41</span>
+                <span>OiPet</span>
+                <span>100%</span>
+            </div>
+
+            <div class="app-content">
+                <div class="header">
+                    <div class="logo">🐾</div>
+                    <div class="app-name">OiPet</div>
+                    <div class="tagline">Nutrição inteligente para seu pet</div>
+                </div>
+
+                <div class="main-content">
+                    <div class="feature-grid">
+                        <div class="feature-card" onclick="showAlert('Meus Pets')">
+                            <div class="feature-icon">🐕</div>
+                            <div class="feature-title">Meus Pets</div>
+                        </div>
+                        <div class="feature-card" onclick="showAlert('Alimentação')">
+                            <div class="feature-icon">🍽️</div>
+                            <div class="feature-title">Alimentação</div>
+                        </div>
+                        <div class="feature-card" onclick="showAlert('Saúde')">
+                            <div class="feature-icon">🏥</div>
+                            <div class="feature-title">Saúde</div>
+                        </div>
+                        <div class="feature-card" onclick="showAlert('Relatórios')">
+                            <div class="feature-icon">📊</div>
+                            <div class="feature-title">Relatórios</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-section">
+                        <div class="stats-title">📈 Estatísticas de Hoje</div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value">3</div>
+                                <div class="stat-label">Refeições</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">1,250</div>
+                                <div class="stat-label">Calorias</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">98%</div>
+                                <div class="stat-label">Meta Atingida</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value">2</div>
+                                <div class="stat-label">Pets Ativos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-nav">
+                <div class="nav-item active">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Início</div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-icon">🐾</div>
+                    <div class="nav-label">Pets</div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-icon">🍽️</div>
+                    <div class="nav-label">Comida</div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-icon">📰</div>
+                    <div class="nav-label">Dicas</div>
+                </div>
+                <div class="nav-item">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">Perfil</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showAlert(feature) {
+            alert(`Funcionalidade: ${feature}\n\nEsta é uma demonstração da interface mobile do OiPet.\n\nO app completo inclui:\n- Gestão de pets\n- Cálculos nutricionais\n- Registro de alimentação\n- Monitoramento de saúde\n- Notificações inteligentes`);
+        }
+
+        // Simular interações
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

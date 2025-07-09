@@ -1,0 +1,35 @@
+{
+  "name": "pet-nutrition-desktop",
+  "version": "1.0.0",
+  "description": "App desktop OiPet para acompanhamento nutricional",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "dist": "electron-builder --publish=never"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "electron": "^25.0.0",
+    "electron-builder": "^24.0.0"
+  },
+  "build": {
+    "appId": "com.oipet.nutrition",
+    "productName": "OiPet Nutrição",
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.lifestyle"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
+}

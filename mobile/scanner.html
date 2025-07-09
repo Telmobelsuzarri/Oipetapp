@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OiPet - Scanner de Produtos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #4F46E5 0%, #06B6D4 50%, #10B981 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .scanner-container {
+            max-width: 400px;
+            margin: 20px auto;
+            background: #000;
+            border-radius: 30px;
+            padding: 5px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .scanner-screen {
+            width: 100%;
+            height: 667px;
+            background: #fff;
+            border-radius: 25px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .status-bar {
+            height: 44px;
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .scanner-header {
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .header-subtitle {
+            opacity: 0.9;
+            font-size: 12px;
+        }
+
+        .main-content {
+            flex: 1;
+            background: #f8fafc;
+            position: relative;
+        }
+
+        .camera-container {
+            width: 100%;
+            height: 300px;
+            background: #000;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #camera-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border: 3px solid #4F46E5;
+            border-radius: 15px;
+            background: rgba(79, 70, 229, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: white;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        .camera-overlay.scanning {
+            border-color: #10B981;
+            background: rgba(16, 185, 129, 0.2);
+            animation: scan 1.5s infinite;
+        }
+
+        .overlay-text {
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .camera-controls {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .capture-btn {
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+            width: 80px;
+            height: 80px;
+            font-size: 30px;
+        }
+
+        .capture-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+        }
+
+        .secondary-btn {
+            background: white;
+            color: #4F46E5;
+            border: 2px solid #4F46E5;
+        }
+
+        .secondary-btn:hover {
+            background: #4F46E5;
+            color: white;
+        }
+
+        .results-section {
+            padding: 20px;
+            background: white;
+            margin: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-image {
+            width: 60px;
+            height: 60px;
+            background: #f8fafc;
+            border-radius: 10px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .result-info {
+            flex: 1;
+        }
+
+        .result-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .result-details {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .result-confidence {
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .scan-history {
+            padding: 20px;
+            background: white;
+            margin: 10px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .history-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 0 -10px;
+        }
+
+        .history-image {
+            width: 40px;
+            height: 40px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-right: 12px;
+            overflow: hidden;
+        }
+
+        .history-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .history-date {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: calc(100% - 20px);
+            margin: 0 10px 20px;
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.95);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #4F46E5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        @keyframes scan {
+            0%, 100% { border-color: #10B981; }
+            50% { border-color: #06B6D4; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="scanner-container">
+        <div class="scanner-screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <span id="time">9:41</span>
+                <span>Scanner OiPet</span>
+                <span>100%</span>
+            </div>
+
+            <!-- Header -->
+            <div class="scanner-header">
+                <div class="header-logo">
+                    <img src="assets/oipet-logo.jpg" alt="OiPet Logo" onerror="this.parentNode.innerHTML='📱'">
+                </div>
+                <div class="header-title">Scanner de Produtos</div>
+                <div class="header-subtitle">Escaneie alimentos para seu pet</div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Camera Container -->
+                <div class="camera-container">
+                    <video id="camera-video" autoplay muted playsinline></video>
+                    <canvas id="capture-canvas" style="display: none;"></canvas>
+                    
+                    <div class="camera-overlay" id="camera-overlay">
+                        <div style="font-size: 40px;">📷</div>
+                        <div class="overlay-text">Posicione o produto aqui</div>
+                    </div>
+                </div>
+
+                <!-- Camera Controls -->
+                <div class="camera-controls">
+                    <button class="control-btn secondary-btn" onclick="toggleCamera()" id="camera-toggle">
+                        📷
+                    </button>
+                    <button class="control-btn capture-btn" onclick="capturePhoto()" id="capture-btn">
+                        📸
+                    </button>
+                    <button class="control-btn secondary-btn" onclick="uploadPhoto()">
+                        📁
+                    </button>
+                </div>
+
+                <!-- Messages -->
+                <div class="error-message" id="error-message"></div>
+                <div class="success-message" id="success-message"></div>
+
+                <!-- Loading -->
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <div>Analisando produto...</div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section" id="results-section">
+                    <h3 style="margin-bottom: 15px; color: #2d3748;">🔍 Resultados do Scan</h3>
+                    <div id="results-container">
+                        <!-- Results will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Scan History -->
+                <div class="scan-history">
+                    <div class="history-title">
+                        📋 Histórico de Scans
+                        <button onclick="clearHistory()" style="background: none; border: none; color: #718096; font-size: 12px; cursor: pointer;">Limpar</button>
+                    </div>
+                    <div id="history-container">
+                        <!-- History items will be populated here -->
+                    </div>
+                </div>
+
+                <button class="back-button" onclick="goBack()">
+                    🏠 Voltar ao App Principal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden file input for upload -->
+    <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+
+    <script>
+        let stream = null;
+        let isScanning = false;
+        let scanHistory = JSON.parse(localStorage.getItem('oipet_scan_history') || '[]');
+
+        // Camera functionality
+        async function initCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                document.getElementById('camera-video').srcObject = stream;
+                document.getElementById('camera-toggle').textContent = '⏹️';
+                showSuccess('Câmera ativada com sucesso!');
+            } catch (error) {
+                console.error('Erro ao acessar câmera:', error);
+                showError('Erro ao acessar a câmera. Verifique as permissões.');
+            }
+        }
+
+        function toggleCamera() {
+            if (stream) {
+                stopCamera();
+            } else {
+                initCamera();
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+                document.getElementById('camera-video').srcObject = null;
+                document.getElementById('camera-toggle').textContent = '📷';
+                showSuccess('Câmera desativada');
+            }
+        }
+
+        async function capturePhoto() {
+            if (!stream) {
+                showError('Ative a câmera primeiro!');
+                return;
+            }
+
+            const video = document.getElementById('camera-video');
+            const canvas = document.getElementById('capture-canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas dimensions to match video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Draw video frame to canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert to blob
+            canvas.toBlob(async (blob) => {
+                if (blob) {
+                    await processImage(blob);
+                }
+            }, 'image/jpeg', 0.8);
+
+            // Visual feedback
+            const overlay = document.getElementById('camera-overlay');
+            overlay.classList.add('scanning');
+            overlay.innerHTML = '<div style="font-size: 40px;">🔍</div><div class="overlay-text">Analisando...</div>';
+
+            setTimeout(() => {
+                overlay.classList.remove('scanning');
+                overlay.innerHTML = '<div style="font-size: 40px;">📷</div><div class="overlay-text">Posicione o produto aqui</div>';
+            }, 2000);
+        }
+
+        function uploadPhoto() {
+            document.getElementById('file-input').click();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                processImage(file);
+            }
+        }
+
+        async function processImage(imageBlob) {
+            showLoading(true);
+
+            try {
+                // Store image in IndexedDB
+                const imageUrl = await storeImageInDB(imageBlob);
+                
+                // Simulate AI processing
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Mock product recognition results
+                const results = await mockProductRecognition(imageBlob);
+                
+                // Save to history
+                const scanResult = {
+                    id: Date.now(),
+                    timestamp: new Date().toISOString(),
+                    imageUrl: imageUrl,
+                    results: results
+                };
+                
+                scanHistory.unshift(scanResult);
+                if (scanHistory.length > 20) scanHistory.pop(); // Keep only last 20 scans
+                localStorage.setItem('oipet_scan_history', JSON.stringify(scanHistory));
+                
+                // Display results
+                displayResults(results);
+                updateHistoryDisplay();
+                
+                showSuccess('Produto escaneado com sucesso!');
+                
+            } catch (error) {
+                console.error('Erro ao processar imagem:', error);
+                showError('Erro ao processar a imagem. Tente novamente.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // IndexedDB operations
+        async function storeImageInDB(imageBlob) {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('OiPetScannerDB', 1);
+                
+                request.onerror = () => reject(request.error);
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('images')) {
+                        db.createObjectStore('images', { keyPath: 'id' });
+                    }
+                };
+                
+                request.onsuccess = (event) => {
+                    const db = event.target.result;
+                    const transaction = db.transaction(['images'], 'readwrite');
+                    const store = transaction.objectStore('images');
+                    
+                    const imageId = Date.now().toString();
+                    const imageRecord = {
+                        id: imageId,
+                        blob: imageBlob,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    const addRequest = store.add(imageRecord);
+                    addRequest.onsuccess = () => resolve(imageId);
+                    addRequest.onerror = () => reject(addRequest.error);
+                };
+            });
+        }
+
+        async function getImageFromDB(imageId) {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('OiPetScannerDB', 1);
+                
+                request.onsuccess = (event) => {
+                    const db = event.target.result;
+                    const transaction = db.transaction(['images'], 'readonly');
+                    const store = transaction.objectStore('images');
+                    const getRequest = store.get(imageId);
+                    
+                    getRequest.onsuccess = () => {
+                        if (getRequest.result) {
+                            const blob = getRequest.result.blob;
+                            const url = URL.createObjectURL(blob);
+                            resolve(url);
+                        } else {
+                            resolve(null);
+                        }
+                    };
+                    getRequest.onerror = () => reject(getRequest.error);
+                };
+            });
+        }
+
+        // Mock AI product recognition
+        async function mockProductRecognition(imageBlob) {
+            const products = [
+                {
+                    name: 'Ração Royal Canin Golden Retriever',
+                    brand: 'Royal Canin',
+                    category: 'Ração Seca',
+                    confidence: 95,
+                    nutritionalInfo: {
+                        protein: '25%',
+                        fat: '14%',
+                        fiber: '3.5%',
+                        moisture: '10%'
+                    },
+                    suitableFor: ['Golden Retriever', 'Cães de porte grande'],
+                    price: 'R$ 89,90'
+                },
+                {
+                    name: 'Petisco Natural Desidratado',
+                    brand: 'OiPet',
+                    category: 'Petisco',
+                    confidence: 87,
+                    nutritionalInfo: {
+                        protein: '65%',
+                        fat: '8%',
+                        fiber: '2%',
+                        moisture: '12%'
+                    },
+                    suitableFor: ['Todos os cães', 'Gatos'],
+                    price: 'R$ 24,90'
+                }
+            ];
+
+            // Return random product(s)
+            const numResults = Math.floor(Math.random() * 2) + 1;
+            return products.slice(0, numResults);
+        }
+
+        function displayResults(results) {
+            const container = document.getElementById('results-container');
+            const section = document.getElementById('results-section');
+            
+            container.innerHTML = '';
+            
+            results.forEach(product => {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `
+                    <div class="result-image">🥫</div>
+                    <div class="result-info">
+                        <div class="result-name">${product.name}</div>
+                        <div class="result-details">
+                            ${product.brand} • ${product.category} • ${product.price}
+                        </div>
+                        <div style="margin-top: 5px;">
+                            <span style="font-size: 11px; color: #4F46E5;">
+                                Proteína: ${product.nutritionalInfo.protein} | 
+                                Gordura: ${product.nutritionalInfo.fat}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="result-confidence">${product.confidence}%</div>
+                `;
+                
+                resultItem.onclick = () => showProductDetails(product);
+                container.appendChild(resultItem);
+            });
+            
+            section.classList.add('active');
+        }
+
+        function showProductDetails(product) {
+            alert(`🥫 ${product.name}\n\n` +
+                  `Marca: ${product.brand}\n` +
+                  `Categoria: ${product.category}\n` +
+                  `Preço: ${product.price}\n` +
+                  `Confiança: ${product.confidence}%\n\n` +
+                  `Informações Nutricionais:\n` +
+                  `• Proteína: ${product.nutritionalInfo.protein}\n` +
+                  `• Gordura: ${product.nutritionalInfo.fat}\n` +
+                  `• Fibra: ${product.nutritionalInfo.fiber}\n` +
+                  `• Umidade: ${product.nutritionalInfo.moisture}\n\n` +
+                  `Adequado para: ${product.suitableFor.join(', ')}`);
+        }
+
+        function updateHistoryDisplay() {
+            const container = document.getElementById('history-container');
+            container.innerHTML = '';
+            
+            if (scanHistory.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">Nenhum scan realizado ainda</div>';
+                return;
+            }
+            
+            scanHistory.slice(0, 5).forEach(scan => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                const date = new Date(scan.timestamp);
+                const timeString = date.toLocaleTimeString('pt-BR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                const product = scan.results[0]; // Show first result
+                
+                historyItem.innerHTML = `
+                    <div class="history-image">🥫</div>
+                    <div class="history-info">
+                        <div class="history-name">${product ? product.name : 'Produto não identificado'}</div>
+                        <div class="history-date">${timeString}</div>
+                    </div>
+                `;
+                
+                historyItem.onclick = () => {
+                    if (scan.results.length > 0) {
+                        displayResults(scan.results);
+                    }
+                };
+                
+                container.appendChild(historyItem);
+            });
+        }
+
+        function clearHistory() {
+            if (confirm('Deseja limpar todo o histórico de scans?')) {
+                scanHistory = [];
+                localStorage.removeItem('oipet_scan_history');
+                updateHistoryDisplay();
+                showSuccess('Histórico limpo com sucesso!');
+            }
+        }
+
+        // Utility functions
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('active', show);
+        }
+
+        function showError(message) {
+            const errorEl = document.getElementById('error-message');
+            errorEl.textContent = message;
+            errorEl.style.display = 'block';
+            setTimeout(() => {
+                errorEl.style.display = 'none';
+            }, 3000);
+        }
+
+        function showSuccess(message) {
+            const successEl = document.getElementById('success-message');
+            successEl.textContent = message;
+            successEl.style.display = 'block';
+            setTimeout(() => {
+                successEl.style.display = 'none';
+            }, 3000);
+        }
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('time').textContent = 
+                now.getHours().toString().padStart(2, '0') + ':' + 
+                now.getMinutes().toString().padStart(2, '0');
+        }
+
+        function goBack() {
+            if (confirm('🏠 Voltar ao aplicativo principal?')) {
+                window.location.href = 'mobile-standalone.html';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            updateHistoryDisplay();
+            
+            // Auto-initialize camera
+            setTimeout(() => {
+                initCamera();
+            }, 1000);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            stopCamera();
+        });
+    </script>
+</body>
+</html>

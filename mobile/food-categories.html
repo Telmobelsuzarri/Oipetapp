@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OiPet - Gestão de Categorias de Alimentos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+        }
+
+        .header-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .header-subtitle {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 18px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #4F46E5;
+            border: 2px solid #4F46E5;
+        }
+
+        .btn-secondary:hover {
+            background: #4F46E5;
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .category-info {
+            flex: 1;
+        }
+
+        .category-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .category-count {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+
+        .edit-btn:hover {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+
+        .delete-btn {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .delete-btn:hover {
+            background: #feb2b2;
+            color: #9b2c2c;
+        }
+
+        .products-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 2px;
+        }
+
+        .product-price {
+            font-size: 12px;
+            color: #10B981;
+            font-weight: 600;
+        }
+
+        .product-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-imported {
+            background: #bee3f8;
+            color: #2a69ac;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 5px;
+        }
+
+        .close-btn:hover {
+            color: #6b7280;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .import-section {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(6, 182, 212, 0.1));
+            border: 2px dashed #4F46E5;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .import-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4F46E5;
+            margin-bottom: 15px;
+        }
+
+        .import-description {
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #4F46E5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .top-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-bar {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="goBack()">⬅️ Voltar</button>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-logo">
+                <img src="assets/oipet-logo.jpg" alt="OiPet Logo" onerror="this.parentNode.innerHTML='🥫'">
+            </div>
+            <div class="header-title">Gestão de Categorias de Alimentos</div>
+            <div class="header-subtitle">Organize e gerencie o catálogo de produtos OiPet</div>
+        </div>
+
+        <div class="top-actions">
+            <div class="search-bar">
+                <div class="search-icon">🔍</div>
+                <input type="text" class="search-input" id="search-input" placeholder="Buscar categorias ou produtos...">
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="importFromOiPet()">
+                    🌐 Importar da OiPet
+                </button>
+                <button class="btn btn-primary" onclick="openCategoryModal()">
+                    ➕ Nova Categoria
+                </button>
+            </div>
+        </div>
+
+        <div class="import-section">
+            <div class="import-title">🌐 Integração com OiPet Website</div>
+            <div class="import-description">
+                Importe automaticamente produtos das categorias: Alimentação Natural, Biscoitos e Desidratados
+            </div>
+            <button class="btn btn-primary" onclick="showImportOptions()">
+                📥 Importar Produtos
+            </button>
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div>Carregando produtos...</div>
+        </div>
+
+        <div class="categories-grid" id="categories-grid">
+            <!-- Categories will be populated here -->
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal" id="category-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Nova Categoria</h3>
+                <button class="close-btn" onclick="closeCategoryModal()">✕</button>
+            </div>
+            <form id="category-form">
+                <div class="form-group">
+                    <label class="form-label">📝 Nome da Categoria</label>
+                    <input type="text" class="form-input" id="category-name" placeholder="Ex: Ração Seca Premium" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🎨 Ícone (Emoji)</label>
+                    <input type="text" class="form-input" id="category-icon" placeholder="🥫" maxlength="2">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">📝 Descrição</label>
+                    <textarea class="form-textarea" id="category-description" placeholder="Descrição da categoria..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">🏷️ Tags (separadas por vírgula)</label>
+                    <input type="text" class="form-input" id="category-tags" placeholder="ração, premium, adulto">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💾 Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Mock data with OiPet products
+        let categories = [
+            {
+                id: 1,
+                name: 'Alimentação Natural',
+                icon: '🌱',
+                description: 'Produtos naturais da linha Oi Cão!',
+                count: 7,
+                products: [
+                    { id: 1, name: 'Oi Cão! Peixe', price: 15.50, status: 'imported', source: 'oipet' },
+                    { id: 2, name: 'Oi Cão! Sênior Lombo', price: 15.50, status: 'imported', source: 'oipet' },
+                    { id: 3, name: 'Oi Cão! Grain Free Pernil', price: 15.50, status: 'imported', source: 'oipet' },
+                    { id: 4, name: 'Oi Cão! Peru', price: 15.50, status: 'imported', source: 'oipet' },
+                    { id: 5, name: 'Oi Cão! Frango', price: 15.50, status: 'imported', source: 'oipet' },
+                    { id: 6, name: 'Oi Cão! Carne', price: 15.50, status: 'imported', source: 'oipet' },
+                    { id: 7, name: 'Oi Cão! Baby Frango', price: 15.50, status: 'imported', source: 'oipet' }
+                ]
+            },
+            {
+                id: 2,
+                name: 'Biscoitos e Petiscos',
+                icon: '🍪',
+                description: 'Snacks e biscoitos para pets',
+                count: 5,
+                products: [
+                    { id: 8, name: 'Snack Salmão', price: 21.90, status: 'imported', source: 'oipet' },
+                    { id: 9, name: 'Sequilho de coco', price: 21.90, status: 'imported', source: 'oipet' },
+                    { id: 10, name: 'Lombinho Suíno Assado', price: 21.90, status: 'imported', source: 'oipet' },
+                    { id: 11, name: 'Cookie de Maçã', price: 21.90, status: 'imported', source: 'oipet' },
+                    { id: 12, name: 'Biscoito de Frango', price: 21.90, status: 'imported', source: 'oipet' }
+                ]
+            },
+            {
+                id: 3,
+                name: 'Produtos Desidratados',
+                icon: '🥩',
+                description: 'Carnes e petiscos desidratados',
+                count: 8,
+                products: [
+                    { id: 13, name: 'Tirinha de Lagarto Bovino', price: 27.00, status: 'imported', source: 'oipet' },
+                    { id: 14, name: 'Delícia de Frango', price: 27.00, status: 'imported', source: 'oipet' },
+                    { id: 15, name: 'Manjubinha Crocante', price: 27.00, status: 'imported', source: 'oipet' },
+                    { id: 16, name: 'Gostosura de Moela', price: 27.00, status: 'imported', source: 'oipet' },
+                    { id: 17, name: 'Coraçãozinho Bovino', price: 27.00, status: 'imported', source: 'oipet' },
+                    { id: 18, name: 'Camarãozinho', price: 16.00, status: 'imported', source: 'oipet' },
+                    { id: 19, name: 'Bifinho de Mignon Suíno', price: 27.00, status: 'imported', source: 'oipet' },
+                    { id: 20, name: 'Salada de Frutas', price: 20.00, status: 'imported', source: 'oipet' }
+                ]
+            },
+            {
+                id: 4,
+                name: 'Ração Premium',
+                icon: '🥫',
+                description: 'Rações premium para cães e gatos',
+                count: 3,
+                products: [
+                    { id: 21, name: 'Royal Canin Golden Retriever', price: 89.90, status: 'active', source: 'manual' },
+                    { id: 22, name: 'Hill\'s Science Diet Adult', price: 124.50, status: 'active', source: 'manual' },
+                    { id: 23, name: 'Pedigree Raças Pequenas', price: 45.90, status: 'active', source: 'manual' }
+                ]
+            }
+        ];
+
+        let editingCategoryId = null;
+
+        function renderCategories() {
+            const grid = document.getElementById('categories-grid');
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            
+            const filteredCategories = categories.filter(category => 
+                category.name.toLowerCase().includes(searchTerm) ||
+                category.products.some(product => product.name.toLowerCase().includes(searchTerm))
+            );
+            
+            grid.innerHTML = filteredCategories.map(category => `
+                <div class="category-card">
+                    <div class="category-header">
+                        <div class="category-title">
+                            <div class="category-icon">${category.icon}</div>
+                            <div class="category-info">
+                                <div class="category-name">${category.name}</div>
+                                <div class="category-count">${category.count} produtos</div>
+                            </div>
+                        </div>
+                        <div class="category-actions">
+                            <button class="action-btn edit-btn" onclick="editCategory(${category.id})" title="Editar">
+                                ✏️
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteCategory(${category.id})" title="Excluir">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="products-list">
+                        ${category.products.map(product => `
+                            <div class="product-item">
+                                <div class="product-info">
+                                    <div class="product-name">${product.name}</div>
+                                    <div class="product-price">R$ ${product.price.toFixed(2)}</div>
+                                </div>
+                                <div class="product-status ${product.status === 'imported' ? 'status-imported' : 'status-active'}">
+                                    ${product.status === 'imported' ? 'Importado' : 'Ativo'}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openCategoryModal(categoryId = null) {
+            editingCategoryId = categoryId;
+            const modal = document.getElementById('category-modal');
+            const title = document.getElementById('modal-title');
+            
+            if (categoryId) {
+                const category = categories.find(c => c.id === categoryId);
+                title.textContent = 'Editar Categoria';
+                document.getElementById('category-name').value = category.name;
+                document.getElementById('category-icon').value = category.icon;
+                document.getElementById('category-description').value = category.description;
+                document.getElementById('category-tags').value = category.tags || '';
+            } else {
+                title.textContent = 'Nova Categoria';
+                document.getElementById('category-form').reset();
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('category-modal').classList.remove('active');
+            editingCategoryId = null;
+        }
+
+        function editCategory(categoryId) {
+            openCategoryModal(categoryId);
+        }
+
+        function deleteCategory(categoryId) {
+            const category = categories.find(c => c.id === categoryId);
+            if (confirm(`Deseja excluir a categoria "${category.name}"? Todos os produtos serão removidos.`)) {
+                categories = categories.filter(c => c.id !== categoryId);
+                renderCategories();
+                showNotification('Categoria excluída com sucesso!', 'success');
+            }
+        }
+
+        async function importFromOiPet() {
+            showLoading(true);
+            
+            try {
+                // Simulate import process
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Check if categories already exist and update counts
+                let importCount = 0;
+                
+                categories.forEach(category => {
+                    if (category.name.includes('Natural') || category.name.includes('Biscoito') || category.name.includes('Desidratado')) {
+                        category.products.forEach(product => {
+                            if (product.source === 'oipet') {
+                                importCount++;
+                            }
+                        });
+                    }
+                });
+                
+                showNotification(`✅ ${importCount} produtos importados da OiPet com sucesso!`, 'success');
+                renderCategories();
+                
+            } catch (error) {
+                showNotification('❌ Erro ao importar produtos. Tente novamente.', 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function showImportOptions() {
+            const options = [
+                'Alimentação Natural (7 produtos)',
+                'Biscoitos e Petiscos (5 produtos)', 
+                'Produtos Desidratados (8 produtos)',
+                'Todos os produtos (20 produtos)'
+            ];
+            
+            const choice = prompt(`Escolha uma opção para importar:\n\n${options.map((opt, i) => `${i + 1}. ${opt}`).join('\n')}\n\nDigite o número da opção:`);
+            
+            if (choice && choice >= 1 && choice <= 4) {
+                importFromOiPet();
+            }
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').classList.toggle('active', show);
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#4F46E5'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                font-weight: 600;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out forwards';
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        function goBack() {
+            if (confirm('Voltar ao painel administrativo?')) {
+                window.location.href = 'admin-dashboard.html';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('search-input').addEventListener('input', renderCategories);
+
+        document.getElementById('category-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('category-name').value;
+            const icon = document.getElementById('category-icon').value || '📦';
+            const description = document.getElementById('category-description').value;
+            const tags = document.getElementById('category-tags').value;
+            
+            if (editingCategoryId) {
+                // Edit existing category
+                const category = categories.find(c => c.id === editingCategoryId);
+                category.name = name;
+                category.icon = icon;
+                category.description = description;
+                category.tags = tags;
+                showNotification('Categoria atualizada com sucesso!', 'success');
+            } else {
+                // Create new category
+                const newCategory = {
+                    id: Date.now(),
+                    name,
+                    icon,
+                    description,
+                    tags,
+                    count: 0,
+                    products: []
+                };
+                categories.push(newCategory);
+                showNotification('Categoria criada com sucesso!', 'success');
+            }
+            
+            renderCategories();
+            closeCategoryModal();
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('category-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCategoryModal();
+            }
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCategories();
+            
+            // Add CSS animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

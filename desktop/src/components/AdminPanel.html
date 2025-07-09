@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OiPet Desktop - Painel Administrativo</title>
+    <style>
+        :root {
+            --primary-blue: #0066EE;
+            --primary-teal: #4A9B9B;
+            --vibrant-pink: #EA6B73;
+            --oipet-coral: #EA6B73;
+            --oipet-teal: #4A9B9B;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --border-light: #e2e8f0;
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, var(--oipet-coral) 0%, var(--oipet-teal) 100%);
+            color: white;
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 32px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .admin-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .admin-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .metric-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+            transition: transform 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .metric-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--oipet-coral), var(--oipet-teal));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .metric-change {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .metric-change.positive {
+            color: #10b981;
+        }
+
+        .metric-change.negative {
+            color: #ef4444;
+        }
+
+        .admin-section {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-light);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0052cc;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .data-table th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+        }
+
+        .status-inactive {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .chart-container {
+            height: 300px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 16px;
+            border: 2px dashed var(--border-light);
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .action-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-card:hover {
+            border-color: var(--oipet-coral);
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+
+        .action-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .action-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .alert {
+            padding: 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: rgba(0, 102, 238, 0.1);
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: #10b981;
+            color: #10b981;
+        }
+
+        .logs-container {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 16px;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 4px 0;
+        }
+
+        .log-timestamp {
+            color: #6b7280;
+            margin-right: 12px;
+        }
+
+        .log-level-info {
+            color: #3b82f6;
+        }
+
+        .log-level-warning {
+            color: #f59e0b;
+        }
+
+        .log-level-error {
+            color: #ef4444;
+        }
+
+        .log-level-success {
+            color: #10b981;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Header -->
+        <div class="admin-header">
+            <h1>🛡️ Painel Administrativo OiPet Desktop</h1>
+            <p>Sistema completo de gerenciamento e monitoramento da plataforma</p>
+        </div>
+
+        <!-- Métricas Principais -->
+        <div class="dashboard-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-title">Usuários Ativos</div>
+                    <div class="metric-icon">👥</div>
+                </div>
+                <div class="metric-value">1,234</div>
+                <div class="metric-change positive">+12% esta semana</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-title">Pets Cadastrados</div>
+                    <div class="metric-icon">🐕</div>
+                </div>
+                <div class="metric-value">2,567</div>
+                <div class="metric-change positive">+8% esta semana</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-title">Alimentações Hoje</div>
+                    <div class="metric-icon">🍽️</div>
+                </div>
+                <div class="metric-value">456</div>
+                <div class="metric-change positive">+15% vs ontem</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-title">Sistema</div>
+                    <div class="metric-icon">⚡</div>
+                </div>
+                <div class="metric-value">99.9%</div>
+                <div class="metric-change positive">Uptime</div>
+            </div>
+        </div>
+
+        <!-- Alertas do Sistema -->
+        <div class="admin-section">
+            <div class="section-header">
+                <h2 class="section-title">🚨 Alertas do Sistema</h2>
+                <button class="btn btn-primary" onclick="refreshAlerts()">
+                    🔄 Atualizar
+                </button>
+            </div>
+
+            <div class="alert alert-success">
+                <strong>✅ Sistema Online:</strong> Todos os serviços estão funcionando normalmente.
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Manutenção Programada:</strong> Atualização do banco de dados agendada para 02:00.
+            </div>
+
+            <div class="alert alert-info">
+                <strong>ℹ️ Nova Versão:</strong> OiPet Desktop v2.1.0 disponível para download.
+            </div>
+        </div>
+
+        <!-- Gerenciamento de Usuários -->
+        <div class="admin-section">
+            <div class="section-header">
+                <h2 class="section-title">👥 Gerenciamento de Usuários</h2>
+                <div>
+                    <button class="btn btn-success" onclick="addUser()">
+                        ➕ Adicionar Usuário
+                    </button>
+                    <button class="btn btn-primary" onclick="exportUsers()">
+                        📊 Exportar Dados
+                    </button>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Pets</th>
+                        <th>Status</th>
+                        <th>Último Acesso</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#001</td>
+                        <td>João Silva</td>
+                        <td>joao@email.com</td>
+                        <td>2</td>
+                        <td><span class="status-badge status-active">Ativo</span></td>
+                        <td>Hoje, 14:30</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="editUser(1)">✏️</button>
+                            <button class="btn btn-danger" onclick="deleteUser(1)">🗑️</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#002</td>
+                        <td>Maria Santos</td>
+                        <td>maria@email.com</td>
+                        <td>1</td>
+                        <td><span class="status-badge status-active">Ativo</span></td>
+                        <td>Ontem, 16:45</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="editUser(2)">✏️</button>
+                            <button class="btn btn-danger" onclick="deleteUser(2)">🗑️</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#003</td>
+                        <td>Pedro Costa</td>
+                        <td>pedro@email.com</td>
+                        <td>3</td>
+                        <td><span class="status-badge status-inactive">Inativo</span></td>
+                        <td>5 dias atrás</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="editUser(3)">✏️</button>
+                            <button class="btn btn-danger" onclick="deleteUser(3)">🗑️</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Análise de Performance -->
+        <div class="admin-section">
+            <div class="section-header">
+                <h2 class="section-title">📈 Análise de Performance</h2>
+                <button class="btn btn-primary" onclick="generateReport()">
+                    📊 Gerar Relatório
+                </button>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-placeholder">
+                    <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+                    <h3>Gráfico de Performance</h3>
+                    <p>Dados de uso e performance da aplicação</p>
+                    <button class="btn btn-primary" onclick="loadChart()" style="margin-top: 16px;">
+                        📈 Carregar Gráfico
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações Rápidas -->
+        <div class="admin-section">
+            <div class="section-header">
+                <h2 class="section-title">⚡ Ações Rápidas</h2>
+            </div>
+
+            <div class="action-grid">
+                <div class="action-card" onclick="backupDatabase()">
+                    <div class="action-icon">💾</div>
+                    <div class="action-title">Backup</div>
+                    <div class="action-desc">Fazer backup do banco</div>
+                </div>
+
+                <div class="action-card" onclick="clearCache()">
+                    <div class="action-icon">🧹</div>
+                    <div class="action-title">Limpar Cache</div>
+                    <div class="action-desc">Limpar cache do sistema</div>
+                </div>
+
+                <div class="action-card" onclick="sendNotification()">
+                    <div class="action-icon">📢</div>
+                    <div class="action-title">Notificação</div>
+                    <div class="action-desc">Enviar para usuários</div>
+                </div>
+
+                <div class="action-card" onclick="systemMaintenance()">
+                    <div class="action-icon">🔧</div>
+                    <div class="action-title">Manutenção</div>
+                    <div class="action-desc">Modo manutenção</div>
+                </div>
+
+                <div class="action-card" onclick="updateSystem()">
+                    <div class="action-icon">🔄</div>
+                    <div class="action-title">Atualizar</div>
+                    <div class="action-desc">Atualizar sistema</div>
+                </div>
+
+                <div class="action-card" onclick="viewLogs()">
+                    <div class="action-icon">📋</div>
+                    <div class="action-title">Logs</div>
+                    <div class="action-desc">Visualizar logs</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs do Sistema -->
+        <div class="admin-section">
+            <div class="section-header">
+                <h2 class="section-title">📋 Logs do Sistema</h2>
+                <div>
+                    <button class="btn btn-primary" onclick="refreshLogs()">
+                        🔄 Atualizar
+                    </button>
+                    <button class="btn btn-warning" onclick="clearLogs()">
+                        🧹 Limpar
+                    </button>
+                </div>
+            </div>
+
+            <div class="logs-container" id="logs-container">
+                <div class="log-entry">
+                    <span class="log-timestamp">2025-07-06 15:30:25</span>
+                    <span class="log-level-info">[INFO]</span>
+                    Sistema inicializado com sucesso
+                </div>
+                <div class="log-entry">
+                    <span class="log-timestamp">2025-07-06 15:30:20</span>
+                    <span class="log-level-success">[SUCCESS]</span>
+                    Conexão com banco de dados estabelecida
+                </div>
+                <div class="log-entry">
+                    <span class="log-timestamp">2025-07-06 15:30:15</span>
+                    <span class="log-level-warning">[WARNING]</span>
+                    Cache de imagens com 85% de capacidade
+                </div>
+                <div class="log-entry">
+                    <span class="log-timestamp">2025-07-06 15:30:10</span>
+                    <span class="log-level-info">[INFO]</span>
+                    Backup automático concluído
+                </div>
+                <div class="log-entry">
+                    <span class="log-timestamp">2025-07-06 15:30:05</span>
+                    <span class="log-level-success">[SUCCESS]</span>
+                    Usuário joão@email.com autenticado
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Admin Panel Functions
+        function refreshAlerts() {
+            alert('✅ Alertas atualizados com sucesso!');
+        }
+
+        function addUser() {
+            const name = prompt('Nome do usuário:');
+            const email = prompt('Email do usuário:');
+            if (name && email) {
+                alert(`✅ Usuário ${name} adicionado com sucesso!`);
+            }
+        }
+
+        function editUser(id) {
+            alert(`✏️ Editando usuário #${id}`);
+        }
+
+        function deleteUser(id) {
+            if (confirm(`Tem certeza que deseja excluir o usuário #${id}?`)) {
+                alert(`🗑️ Usuário #${id} excluído!`);
+            }
+        }
+
+        function exportUsers() {
+            alert('📊 Exportando dados dos usuários...');
+        }
+
+        function generateReport() {
+            alert('📊 Gerando relatório de performance...');
+        }
+
+        function loadChart() {
+            document.querySelector('.chart-container').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 64px; margin-bottom: 16px;">📈</div>
+                    <h3>Gráfico Carregado!</h3>
+                    <p>Dados de performance dos últimos 30 dias</p>
+                </div>
+            `;
+        }
+
+        function backupDatabase() {
+            if (confirm('Iniciar backup do banco de dados?')) {
+                alert('💾 Backup iniciado! Você será notificado quando concluído.');
+            }
+        }
+
+        function clearCache() {
+            if (confirm('Limpar todo o cache do sistema?')) {
+                alert('🧹 Cache limpo com sucesso!');
+            }
+        }
+
+        function sendNotification() {
+            const message = prompt('Mensagem da notificação:');
+            if (message) {
+                alert(`📢 Notificação "${message}" enviada para todos os usuários!`);
+            }
+        }
+
+        function systemMaintenance() {
+            if (confirm('Ativar modo de manutenção? O sistema ficará indisponível.')) {
+                alert('🔧 Modo de manutenção ativado!');
+            }
+        }
+
+        function updateSystem() {
+            if (confirm('Iniciar atualização do sistema?')) {
+                alert('🔄 Atualização iniciada! O sistema será reiniciado.');
+            }
+        }
+
+        function viewLogs() {
+            document.getElementById('logs-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function refreshLogs() {
+            const logsContainer = document.getElementById('logs-container');
+            const now = new Date();
+            const timestamp = now.toLocaleString('pt-BR');
+            
+            const newLog = document.createElement('div');
+            newLog.className = 'log-entry';
+            newLog.innerHTML = `
+                <span class="log-timestamp">${timestamp}</span>
+                <span class="log-level-info">[INFO]</span>
+                Logs atualizados manualmente
+            `;
+            
+            logsContainer.insertBefore(newLog, logsContainer.firstChild);
+        }
+
+        function clearLogs() {
+            if (confirm('Limpar todos os logs?')) {
+                document.getElementById('logs-container').innerHTML = `
+                    <div class="log-entry">
+                        <span class="log-timestamp">${new Date().toLocaleString('pt-BR')}</span>
+                        <span class="log-level-info">[INFO]</span>
+                        Logs limpos pelo administrador
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-refresh logs every 30 seconds
+        setInterval(() => {
+            const messages = [
+                '[INFO] Heartbeat do sistema',
+                '[SUCCESS] Backup automático',
+                '[INFO] Limpeza de cache',
+                '[SUCCESS] Usuário autenticado',
+                '[WARNING] Uso de memória alto'
+            ];
+            
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            const levels = ['log-level-info', 'log-level-success', 'log-level-warning'];
+            const level = levels[Math.floor(Math.random() * levels.length)];
+            
+            const logsContainer = document.getElementById('logs-container');
+            const newLog = document.createElement('div');
+            newLog.className = 'log-entry';
+            newLog.innerHTML = `
+                <span class="log-timestamp">${new Date().toLocaleString('pt-BR')}</span>
+                <span class="${level}">${randomMessage.split(']')[0]}]</span>
+                ${randomMessage.split(']')[1]}
+            `;
+            
+            logsContainer.insertBefore(newLog, logsContainer.firstChild);
+            
+            // Keep only last 20 logs
+            while (logsContainer.children.length > 20) {
+                logsContainer.removeChild(logsContainer.lastChild);
+            }
+        }, 30000);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🛡️ Painel Administrativo OiPet Desktop carregado');
+        });
+    </script>
+</body>
+</html>

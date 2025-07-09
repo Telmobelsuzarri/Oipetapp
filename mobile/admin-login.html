@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OiPet - Admin Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #4F46E5 0%, #06B6D4 50%, #10B981 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 25px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #4F46E5, #06B6D4);
+        }
+
+        .logo-section {
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+            overflow: hidden;
+            border: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            font-size: 16px;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #4F46E5;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #666;
+            font-size: 18px;
+            user-select: none;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-button.loading {
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        .login-button.loading .loading-spinner {
+            display: block;
+        }
+
+        .login-button.loading .button-text {
+            display: none;
+        }
+
+        .forgot-password {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #4F46E5;
+        }
+
+        .security-info {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 25px;
+            text-align: left;
+        }
+
+        .security-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+
+        .security-list {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .demo-credentials {
+            background: rgba(79, 70, 229, 0.1);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .demo-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4F46E5;
+            margin-bottom: 8px;
+        }
+
+        .demo-item {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 4px;
+            font-family: monospace;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container fade-in">
+        <div class="logo-section">
+            <div class="logo">
+                <img src="assets/oipet-logo.jpg" alt="OiPet Logo" onerror="this.parentNode.innerHTML='🐾'">
+            </div>
+            <h1 class="title">OiPet Admin</h1>
+            <p class="subtitle">Painel Administrativo</p>
+            <div class="admin-badge">🔐 Acesso Restrito</div>
+        </div>
+
+        <div class="demo-credentials">
+            <div class="demo-title">🧪 Credenciais de Demonstração</div>
+            <div class="demo-item">👤 Usuário: admin@oipet.com</div>
+            <div class="demo-item">🔑 Senha: oipet2024</div>
+        </div>
+
+        <div class="error-message" id="error-message"></div>
+        <div class="success-message" id="success-message"></div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label class="form-label" for="email">📧 Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    class="form-input" 
+                    placeholder="admin@oipet.com"
+                    value="admin@oipet.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">🔑 Senha</label>
+                <div class="password-container">
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="Digite sua senha"
+                        value="oipet2024"
+                        required
+                    >
+                    <span class="password-toggle" onclick="togglePassword()">👁️</span>
+                </div>
+            </div>
+
+            <button type="submit" class="login-button">
+                <div class="loading-spinner"></div>
+                <span class="button-text">🚀 Entrar no Painel</span>
+            </button>
+        </form>
+
+        <a href="#" class="forgot-password" onclick="showForgotPassword()">
+            Esqueceu a senha?
+        </a>
+
+        <div class="security-info">
+            <div class="security-title">🛡️ Informações de Segurança</div>
+            <div class="security-list">
+                • Sessão segura com criptografia SSL<br>
+                • Autenticação de dois fatores disponível<br>
+                • Logs de acesso monitorados 24/7<br>
+                • Dados protegidos por LGPD
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const button = document.querySelector('.login-button');
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            
+            // Hide previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Show loading state
+            button.classList.add('loading');
+            
+            // Simulate login validation
+            setTimeout(() => {
+                if (email === 'admin@oipet.com' && password === 'oipet2024') {
+                    // Success
+                    successMessage.textContent = '✅ Login realizado com sucesso! Redirecionando...';
+                    successMessage.style.display = 'block';
+                    
+                    setTimeout(() => {
+                        window.location.href = 'admin-dashboard.html';
+                    }, 1500);
+                } else {
+                    // Error
+                    errorMessage.textContent = '❌ Credenciais inválidas. Verifique email e senha.';
+                    errorMessage.style.display = 'block';
+                    button.classList.remove('loading');
+                }
+            }, 2000);
+        });
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggle = document.querySelector('.password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggle.textContent = '🙈';
+            } else {
+                passwordInput.type = 'password';
+                toggle.textContent = '👁️';
+            }
+        }
+
+        function showForgotPassword() {
+            alert('🔄 Recuperação de Senha\n\n' +
+                  'Para recuperar sua senha:\n\n' +
+                  '1. Entre em contato com o administrador\n' +
+                  '2. Envie um email para: suporte@oipet.com\n' +
+                  '3. Informe seu email cadastrado\n' +
+                  '4. Aguarde as instruções\n\n' +
+                  '⏱️ Tempo de resposta: até 2 horas úteis');
+        }
+
+        // Add enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('login-form').dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // Auto-focus on email field
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('email').focus();
+        });
+    </script>
+</body>
+</html>

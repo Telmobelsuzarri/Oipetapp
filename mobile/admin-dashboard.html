@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OiPet - Dashboard Administrativo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1a202c;
+            line-height: 1.6;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .sidebar-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .sidebar-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .sidebar-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-subtitle {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 16px;
+            width: 20px;
+        }
+
+        .nav-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 20px;
+        }
+
+        .top-bar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .admin-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c53030;
+            transform: translateY(-2px);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+        }
+
+        .card-icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .card-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #4F46E5;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .card-value:hover {
+            color: #06B6D4;
+            transform: scale(1.05);
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .card-trend {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .trend-positive {
+            color: #48bb78;
+        }
+
+        .trend-negative {
+            color: #f56565;
+        }
+
+        /* Charts */
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .chart-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chart-btn {
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chart-btn:hover {
+            background: #4F46E5;
+            color: white;
+            border-color: #4F46E5;
+        }
+
+        .chart-btn.active {
+            background: #06B6D4;
+            color: white;
+            border-color: #06B6D4;
+        }
+
+        /* Interactive Chart */
+        .interactive-chart {
+            width: 100%;
+            height: 300px;
+            background: #f8fafc;
+            border-radius: 10px;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            padding: 20px 10px 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-bar {
+            width: 40px;
+            background: linear-gradient(to top, #4F46E5, #06B6D4);
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            margin: 0 5px;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .chart-bar::before {
+            content: attr(data-value);
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2d3748;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .chart-bar:hover::before {
+            opacity: 1;
+        }
+
+        .chart-bar::after {
+            content: attr(data-label);
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: #718096;
+            white-space: nowrap;
+        }
+
+        /* Data Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 14px;
+        }
+
+        .data-table td {
+            font-size: 14px;
+            color: #2d3748;
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status-inactive {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .status-pending {
+            background: #fef5e7;
+            color: #744210;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .export-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .export-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+        }
+
+        .export-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border: 1px solid #e2e8f0;
+            min-width: 200px;
+            z-index: 1000;
+            margin-top: 5px;
+        }
+
+        .export-menu.active {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .export-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .export-option:last-child {
+            border-bottom: none;
+        }
+
+        .export-option:hover {
+            background: #f8fafc;
+        }
+
+        .export-icon {
+            font-size: 16px;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="assets/oipet-logo.jpg" alt="OiPet Logo" onerror="this.parentNode.innerHTML='🐾'">
+                </div>
+                <div class="sidebar-title">OiPet Admin</div>
+                <div class="sidebar-subtitle">Painel Administrativo</div>
+            </div>
+
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a class="nav-link active" onclick="switchScreen('dashboard')">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="switchScreen('pets')">
+                        <span class="nav-icon">🐕</span>
+                        Pets Cadastrados
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="switchScreen('foods')">
+                        <span class="nav-icon">🥫</span>
+                        Alimentos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="openFoodCategories()">
+                        <span class="nav-icon">🏷️</span>
+                        Categorias
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="switchScreen('users')">
+                        <span class="nav-icon">👥</span>
+                        Usuários
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="switchScreen('sales')">
+                        <span class="nav-icon">💰</span>
+                        Vendas
+                    </a>
+                </li>
+            </ul>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Conteúdo</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="openNewsManagement()">
+                            <span class="nav-icon">📰</span>
+                            Notícias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="openPushNotifications()">
+                            <span class="nav-icon">📱</span>
+                            Push Notifications
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Relatórios</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="switchScreen('analytics')">
+                            <span class="nav-icon">📈</span>
+                            Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="switchScreen('logs')">
+                            <span class="nav-icon">📋</span>
+                            Logs de Acesso
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <h1 class="page-title" id="page-title">Dashboard Administrativo</h1>
+                <div class="admin-info">
+                    <div class="export-dropdown">
+                        <button class="export-btn" onclick="toggleExportMenu()">
+                            📊 Exportar
+                            <span>▼</span>
+                        </button>
+                        <div class="export-menu" id="export-menu">
+                            <div class="export-option" onclick="exportData('excel')">
+                                <span class="export-icon">📗</span>
+                                <span>Exportar Excel</span>
+                            </div>
+                            <div class="export-option" onclick="exportData('pdf')">
+                                <span class="export-icon">📄</span>
+                                <span>Exportar PDF</span>
+                            </div>
+                            <div class="export-option" onclick="exportData('csv')">
+                                <span class="export-icon">📊</span>
+                                <span>Exportar CSV</span>
+                            </div>
+                            <div class="export-option" onclick="exportData('json')">
+                                <span class="export-icon">🗂️</span>
+                                <span>Exportar JSON</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="admin-avatar">AD</div>
+                    <span>Admin OiPet</span>
+                    <button class="logout-btn" onclick="logout()">🚪 Sair</button>
+                </div>
+            </div>
+
+            <!-- Dashboard Screen -->
+            <div class="screen active" id="dashboard-screen">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">🐕</span>
+                                Total de Pets
+                            </div>
+                        </div>
+                        <div class="card-value" onclick="showPetDetails()">2,847</div>
+                        <div class="card-description">Pets cadastrados na plataforma</div>
+                        <div class="card-trend trend-positive">📈 +12% este mês</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">👥</span>
+                                Usuários Ativos
+                            </div>
+                        </div>
+                        <div class="card-value" onclick="showUserDetails()">1,234</div>
+                        <div class="card-description">Usuários com login ativo</div>
+                        <div class="card-trend trend-positive">📈 +8% este mês</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">🥫</span>
+                                Produtos
+                            </div>
+                        </div>
+                        <div class="card-value" onclick="showFoodDetails()">456</div>
+                        <div class="card-description">Alimentos catalogados</div>
+                        <div class="card-trend trend-positive">📈 +5% este mês</div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <span class="card-icon">💰</span>
+                                Vendas do Mês
+                            </div>
+                        </div>
+                        <div class="card-value" onclick="showSalesDetails()">R$ 145K</div>
+                        <div class="card-description">Receita total do mês</div>
+                        <div class="card-trend trend-positive">📈 +23% vs mês anterior</div>
+                    </div>
+                </div>
+
+                <!-- Interactive Charts -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">📊 Cadastros por Mês</h3>
+                        <div class="chart-options">
+                            <button class="chart-btn active" onclick="changeChartPeriod('month')">Mês</button>
+                            <button class="chart-btn" onclick="changeChartPeriod('week')">Semana</button>
+                            <button class="chart-btn" onclick="changeChartPeriod('day')">Dia</button>
+                        </div>
+                    </div>
+                    <div class="interactive-chart" id="registrations-chart">
+                        <div class="chart-bar" style="height: 60%;" data-value="156 pets" data-label="Jan" onclick="showMonthDetails('Janeiro', '156')"></div>
+                        <div class="chart-bar" style="height: 75%;" data-value="189 pets" data-label="Fev" onclick="showMonthDetails('Fevereiro', '189')"></div>
+                        <div class="chart-bar" style="height: 90%;" data-value="224 pets" data-label="Mar" onclick="showMonthDetails('Março', '224')"></div>
+                        <div class="chart-bar" style="height: 85%;" data-value="201 pets" data-label="Abr" onclick="showMonthDetails('Abril', '201')"></div>
+                        <div class="chart-bar" style="height: 100%;" data-value="267 pets" data-label="Mai" onclick="showMonthDetails('Maio', '267')"></div>
+                        <div class="chart-bar" style="height: 95%;" data-value="245 pets" data-label="Jun" onclick="showMonthDetails('Junho', '245')"></div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">💰 Receita por Categoria</h3>
+                    </div>
+                    <div class="interactive-chart" id="revenue-chart">
+                        <div class="chart-bar" style="height: 85%;" data-value="R$ 48K" data-label="Ração" onclick="showCategoryDetails('Ração', 'R$ 48.000')"></div>
+                        <div class="chart-bar" style="height: 60%;" data-value="R$ 32K" data-label="Petiscos" onclick="showCategoryDetails('Petiscos', 'R$ 32.000')"></div>
+                        <div class="chart-bar" style="height: 40%;" data-value="R$ 22K" data-label="Suplementos" onclick="showCategoryDetails('Suplementos', 'R$ 22.000')"></div>
+                        <div class="chart-bar" style="height: 75%;" data-value="R$ 38K" data-label="Acessórios" onclick="showCategoryDetails('Acessórios', 'R$ 38.000')"></div>
+                        <div class="chart-bar" style="height: 25%;" data-value="R$ 5K" data-label="Outros" onclick="showCategoryDetails('Outros', 'R$ 5.000')"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pets Screen -->
+            <div class="screen" id="pets-screen">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">🐕 Pets por Raça</h3>
+                    </div>
+                    <div class="interactive-chart">
+                        <div class="chart-bar" style="height: 100%;" data-value="487 pets" data-label="Golden" onclick="showBreedDetails('Golden Retriever', 487)"></div>
+                        <div class="chart-bar" style="height: 85%;" data-value="356 pets" data-label="Labrador" onclick="showBreedDetails('Labrador', 356)"></div>
+                        <div class="chart-bar" style="height: 70%;" data-value="298 pets" data-label="Poodle" onclick="showBreedDetails('Poodle', 298)"></div>
+                        <div class="chart-bar" style="height: 60%;" data-value="245 pets" data-label="Bulldog" onclick="showBreedDetails('Bulldog', 245)"></div>
+                        <div class="chart-bar" style="height: 90%;" data-value="423 pets" data-label="SRD" onclick="showBreedDetails('Sem Raça Definida', 423)"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📋 Últimos Pets Cadastrados</h3>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Raça</th>
+                                <th>Idade</th>
+                                <th>Dono</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr onclick="showPetProfile('Max')">
+                                <td>Max</td>
+                                <td>Golden Retriever</td>
+                                <td>3 anos</td>
+                                <td>João Silva</td>
+                                <td><span class="status-badge status-active">Ativo</span></td>
+                            </tr>
+                            <tr onclick="showPetProfile('Luna')">
+                                <td>Luna</td>
+                                <td>Siamês</td>
+                                <td>2 anos</td>
+                                <td>Maria Santos</td>
+                                <td><span class="status-badge status-active">Ativo</span></td>
+                            </tr>
+                            <tr onclick="showPetProfile('Rex')">
+                                <td>Rex</td>
+                                <td>Pastor Alemão</td>
+                                <td>5 anos</td>
+                                <td>Carlos Lima</td>
+                                <td><span class="status-badge status-pending">Pendente</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Foods Screen -->
+            <div class="screen" id="foods-screen">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">🥫 Produtos Mais Vendidos</h3>
+                    </div>
+                    <div class="interactive-chart">
+                        <div class="chart-bar" style="height: 100%;" data-value="1,234 vendas" data-label="Royal Canin" onclick="showProductDetails('Royal Canin', 1234)"></div>
+                        <div class="chart-bar" style="height: 85%;" data-value="987 vendas" data-label="Pedigree" onclick="showProductDetails('Pedigree', 987)"></div>
+                        <div class="chart-bar" style="height: 70%;" data-value="756 vendas" data-label="Whiskas" onclick="showProductDetails('Whiskas', 756)"></div>
+                        <div class="chart-bar" style="height: 60%;" data-value="623 vendas" data-label="Hill's" onclick="showProductDetails('Hill\'s', 623)"></div>
+                        <div class="chart-bar" style="height: 90%;" data-value="1,089 vendas" data-label="Premier" onclick="showProductDetails('Premier', 1089)"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📦 Estoque por Categoria</h3>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Categoria</th>
+                                <th>Produtos</th>
+                                <th>Em Estoque</th>
+                                <th>Valor Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr onclick="showCategoryStock('Ração')">
+                                <td>Ração</td>
+                                <td>127</td>
+                                <td>2,890 kg</td>
+                                <td>R$ 89.500</td>
+                            </tr>
+                            <tr onclick="showCategoryStock('Petiscos')">
+                                <td>Petiscos</td>
+                                <td>89</td>
+                                <td>1,234 unidades</td>
+                                <td>R$ 15.670</td>
+                            </tr>
+                            <tr onclick="showCategoryStock('Suplementos')">
+                                <td>Suplementos</td>
+                                <td>45</td>
+                                <td>567 unidades</td>
+                                <td>R$ 22.890</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Users Screen -->
+            <div class="screen" id="users-screen">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-value" onclick="showUserAnalytics('new')">234</div>
+                        <div class="card-description">Novos usuários este mês</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-value" onclick="showUserAnalytics('active')">1,089</div>
+                        <div class="card-description">Usuários ativos (30 dias)</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-value" onclick="showUserAnalytics('retention')">78%</div>
+                        <div class="card-description">Taxa de retenção</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">👥 Últimos Logins</h3>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Usuário</th>
+                                <th>Email</th>
+                                <th>Último Login</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr onclick="showUserProfile('joão')">
+                                <td>João Silva</td>
+                                <td>joao@email.com</td>
+                                <td>Há 2 horas</td>
+                                <td><span class="status-badge status-active">Online</span></td>
+                            </tr>
+                            <tr onclick="showUserProfile('maria')">
+                                <td>Maria Santos</td>
+                                <td>maria@email.com</td>
+                                <td>Há 1 dia</td>
+                                <td><span class="status-badge status-inactive">Offline</span></td>
+                            </tr>
+                            <tr onclick="showUserProfile('carlos')">
+                                <td>Carlos Lima</td>
+                                <td>carlos@email.com</td>
+                                <td>Há 30 min</td>
+                                <td><span class="status-badge status-active">Online</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Sales Screen -->
+            <div class="screen" id="sales-screen">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">💰 Vendas por Dia</h3>
+                    </div>
+                    <div class="interactive-chart">
+                        <div class="chart-bar" style="height: 60%;" data-value="R$ 4.2K" data-label="Seg" onclick="showDayDetails('Segunda', 'R$ 4.200')"></div>
+                        <div class="chart-bar" style="height: 75%;" data-value="R$ 5.8K" data-label="Ter" onclick="showDayDetails('Terça', 'R$ 5.800')"></div>
+                        <div class="chart-bar" style="height: 90%;" data-value="R$ 7.1K" data-label="Qua" onclick="showDayDetails('Quarta', 'R$ 7.100')"></div>
+                        <div class="chart-bar" style="height: 85%;" data-value="R$ 6.5K" data-label="Qui" onclick="showDayDetails('Quinta', 'R$ 6.500')"></div>
+                        <div class="chart-bar" style="height: 100%;" data-value="R$ 8.9K" data-label="Sex" onclick="showDayDetails('Sexta', 'R$ 8.900')"></div>
+                        <div class="chart-bar" style="height: 95%;" data-value="R$ 8.2K" data-label="Sáb" onclick="showDayDetails('Sábado', 'R$ 8.200')"></div>
+                        <div class="chart-bar" style="height: 70%;" data-value="R$ 5.1K" data-label="Dom" onclick="showDayDetails('Domingo', 'R$ 5.100')"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-value" onclick="showSalesMetric('total')">R$ 145K</div>
+                        <div class="card-description">Receita total do mês</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-value" onclick="showSalesMetric('orders')">1,847</div>
+                        <div class="card-description">Pedidos realizados</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-value" onclick="showSalesMetric('average')">R$ 78</div>
+                        <div class="card-description">Ticket médio</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Screen -->
+            <div class="screen" id="analytics-screen">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">📈 Engajamento dos Usuários</h3>
+                    </div>
+                    <div class="interactive-chart">
+                        <div class="chart-bar" style="height: 80%;" data-value="892 sessões" data-label="Segunda" onclick="showEngagementDetails('Segunda', 892)"></div>
+                        <div class="chart-bar" style="height: 95%;" data-value="1,156 sessões" data-label="Terça" onclick="showEngagementDetails('Terça', 1156)"></div>
+                        <div class="chart-bar" style="height: 100%;" data-value="1,234 sessões" data-label="Quarta" onclick="showEngagementDetails('Quarta', 1234)"></div>
+                        <div class="chart-bar" style="height: 85%;" data-value="967 sessões" data-label="Quinta" onclick="showEngagementDetails('Quinta', 967)"></div>
+                        <div class="chart-bar" style="height: 90%;" data-value="1,089 sessões" data-label="Sexta" onclick="showEngagementDetails('Sexta', 1089)"></div>
+                        <div class="chart-bar" style="height: 70%;" data-value="743 sessões" data-label="Sábado" onclick="showEngagementDetails('Sábado', 743)"></div>
+                        <div class="chart-bar" style="height: 60%;" data-value="623 sessões" data-label="Domingo" onclick="showEngagementDetails('Domingo', 623)"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <div class="card-value" onclick="showAnalyticsDetail('pageviews')">45.2K</div>
+                        <div class="card-description">Visualizações de página</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-value" onclick="showAnalyticsDetail('session')">8:45</div>
+                        <div class="card-description">Tempo médio de sessão</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-value" onclick="showAnalyticsDetail('bounce')">24%</div>
+                        <div class="card-description">Taxa de rejeição</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Screen -->
+            <div class="screen" id="logs-screen">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📋 Logs de Acesso Recentes</h3>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Usuário</th>
+                                <th>Ação</th>
+                                <th>IP</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr onclick="showLogDetails('2024-07-08 14:32:15')">
+                                <td>2024-07-08 14:32:15</td>
+                                <td>admin@oipet.com</td>
+                                <td>Dashboard Access</td>
+                                <td>192.168.1.100</td>
+                                <td><span class="status-badge status-active">Sucesso</span></td>
+                            </tr>
+                            <tr onclick="showLogDetails('2024-07-08 14:30:22')">
+                                <td>2024-07-08 14:30:22</td>
+                                <td>joao@email.com</td>
+                                <td>Pet Registration</td>
+                                <td>192.168.1.101</td>
+                                <td><span class="status-badge status-active">Sucesso</span></td>
+                            </tr>
+                            <tr onclick="showLogDetails('2024-07-08 14:28:45')">
+                                <td>2024-07-08 14:28:45</td>
+                                <td>maria@email.com</td>
+                                <td>Failed Login</td>
+                                <td>192.168.1.102</td>
+                                <td><span class="status-badge status-inactive">Falha</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function switchScreen(screenName) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show selected screen
+            const targetScreen = document.getElementById(screenName + '-screen');
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+            }
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            // Update page title
+            const titles = {
+                'dashboard': 'Dashboard Administrativo',
+                'pets': 'Pets Cadastrados',
+                'foods': 'Gerenciamento de Alimentos',
+                'users': 'Gerenciamento de Usuários',
+                'sales': 'Relatório de Vendas',
+                'analytics': 'Analytics e Métricas',
+                'logs': 'Logs de Acesso'
+            };
+            
+            document.getElementById('page-title').textContent = titles[screenName] || 'OiPet Admin';
+        }
+
+        // Dashboard functions
+        function showPetDetails() {
+            alert('🐕 Detalhes dos Pets\n\n' +
+                  'Total: 2,847 pets\n' +
+                  'Ativos: 2,634 (92.5%)\n' +
+                  'Inativos: 213 (7.5%)\n\n' +
+                  'Distribuição por tipo:\n' +
+                  '• Cães: 1,892 (66.4%)\n' +
+                  '• Gatos: 824 (29.0%)\n' +
+                  '• Outros: 131 (4.6%)\n\n' +
+                  'Crescimento: +12% este mês');
+        }
+
+        function showUserDetails() {
+            alert('👥 Detalhes dos Usuários\n\n' +
+                  'Usuários ativos: 1,234\n' +
+                  'Novos este mês: 234\n' +
+                  'Taxa de retenção: 78%\n\n' +
+                  'Distribuição por plano:\n' +
+                  '• Gratuito: 892 (72.3%)\n' +
+                  '• Premium: 342 (27.7%)\n\n' +
+                  'Engajamento médio: 8.5 min/sessão');
+        }
+
+        function showFoodDetails() {
+            alert('🥫 Detalhes dos Produtos\n\n' +
+                  'Total: 456 produtos\n' +
+                  'Em estoque: 423 (92.8%)\n' +
+                  'Fora de estoque: 33 (7.2%)\n\n' +
+                  'Categorias:\n' +
+                  '• Ração: 127 produtos\n' +
+                  '• Petiscos: 89 produtos\n' +
+                  '• Suplementos: 45 produtos\n' +
+                  '• Acessórios: 195 produtos');
+        }
+
+        function showSalesDetails() {
+            alert('💰 Detalhes das Vendas\n\n' +
+                  'Receita do mês: R$ 145.000\n' +
+                  'Pedidos: 1,847\n' +
+                  'Ticket médio: R$ 78,50\n\n' +
+                  'Top categorias:\n' +
+                  '• Ração: R$ 48.000 (33.1%)\n' +
+                  '• Acessórios: R$ 38.000 (26.2%)\n' +
+                  '• Petiscos: R$ 32.000 (22.1%)\n' +
+                  '• Suplementos: R$ 22.000 (15.2%)\n\n' +
+                  'Crescimento: +23% vs mês anterior');
+        }
+
+        // Chart interaction functions
+        function showMonthDetails(month, value) {
+            alert(`📊 ${month} - Cadastros\n\n` +
+                  `Pets cadastrados: ${value}\n` +
+                  `Meta do mês: 200\n` +
+                  `Performance: ${parseInt(value) >= 200 ? '✅ Meta atingida!' : '⚠️ Abaixo da meta'}\n\n` +
+                  `Detalhes:\n` +
+                  `• Cães: ${Math.floor(parseInt(value) * 0.65)}\n` +
+                  `• Gatos: ${Math.floor(parseInt(value) * 0.30)}\n` +
+                  `• Outros: ${Math.floor(parseInt(value) * 0.05)}`);
+        }
+
+        function showCategoryDetails(category, value) {
+            const details = {
+                'Ração': `• Marcas: 12 diferentes\n• Produtos mais vendidos: Royal Canin, Premier\n• Margem média: 35%\n• Clientes recorrentes: 89%`,
+                'Petiscos': `• Marcas: 8 diferentes\n• Produtos mais vendidos: Pedigree, DogShow\n• Margem média: 45%\n• Frequência de compra: Quinzenal`,
+                'Suplementos': `• Marcas: 6 diferentes\n• Produtos mais vendidos: Vitaminas, Probióticos\n• Margem média: 55%\n• Clientes especializados: 67%`,
+                'Acessórios': `• Categorias: 15 diferentes\n• Produtos mais vendidos: Coleiras, Brinquedos\n• Margem média: 40%\n• Sazonalidade: Alta no inverno`,
+                'Outros': `• Produtos diversos\n• Margem média: 30%\n• Vendas esporádicas`
+            };
+
+            alert(`💰 ${category} - ${value}\n\n` +
+                  `Receita total: ${value}\n` +
+                  `Participação: ${category === 'Ração' ? '33.1%' : category === 'Acessórios' ? '26.2%' : category === 'Petiscos' ? '22.1%' : category === 'Suplementos' ? '15.2%' : '3.4%'}\n\n` +
+                  details[category]);
+        }
+
+        // Pet screen functions
+        function showBreedDetails(breed, count) {
+            alert(`🐕 ${breed}\n\n` +
+                  `Total cadastrados: ${count} pets\n` +
+                  `Porcentagem: ${((count/2847)*100).toFixed(1)}%\n\n` +
+                  `Características:\n` +
+                  `• Idade média: ${breed === 'Golden Retriever' ? '4.2 anos' : breed === 'Labrador' ? '3.8 anos' : '3.5 anos'}\n` +
+                  `• Peso médio: ${breed === 'Golden Retriever' ? '28kg' : breed === 'Labrador' ? '30kg' : '15kg'}\n` +
+                  `• Cuidados especiais: ${breed.includes('Bulldog') ? 'Respiração' : 'Atividade física'}\n` +
+                  `• Longevidade: ${breed === 'Golden Retriever' ? '12-14 anos' : '10-15 anos'}`);
+        }
+
+        function showPetProfile(petName) {
+            const profiles = {
+                'Max': `🐕 Perfil do Max\n\nRaça: Golden Retriever\nIdade: 3 anos\nPeso: 25kg\nDono: João Silva\nCadastrado: Janeiro 2024\n\nHistórico:\n• 45 refeições registradas\n• 12 check-ups de saúde\n• Vacinação em dia\n• Último exame: Junho 2024`,
+                'Luna': `🐱 Perfil da Luna\n\nRaça: Siamês\nIdade: 2 anos\nPeso: 4kg\nDona: Maria Santos\nCadastrado: Março 2024\n\nHistórico:\n• 38 refeições registradas\n• 8 check-ups de saúde\n• Castrada\n• Último exame: Maio 2024`,
+                'Rex': `🐕 Perfil do Rex\n\nRaça: Pastor Alemão\nIdade: 5 anos\nPeso: 35kg\nDono: Carlos Lima\nCadastrado: Junho 2024\n\nHistórico:\n• 12 refeições registradas\n• 2 check-ups de saúde\n• Perfil pendente de validação\n• Status: Em análise`
+            };
+            alert(profiles[petName] || 'Perfil não encontrado');
+        }
+
+        // Food screen functions
+        function showProductDetails(product, sales) {
+            alert(`🥫 ${product}\n\n` +
+                  `Vendas: ${sales} unidades\n` +
+                  `Receita: R$ ${(sales * 45).toLocaleString()}\n` +
+                  `Margem: 35%\n\n` +
+                  `Detalhes:\n` +
+                  `• Categoria: Ração Premium\n` +
+                  `• Avaliação: 4.8/5.0\n` +
+                  `• Estoque atual: ${Math.floor(sales * 0.3)} unidades\n` +
+                  `• Fornecedor: ${product} Brasil\n` +
+                  `• Última reposição: Há 5 dias`);
+        }
+
+        function showCategoryStock(category) {
+            alert(`📦 Estoque - ${category}\n\n` +
+                  `Produtos ativos: ${category === 'Ração' ? '127' : category === 'Petiscos' ? '89' : '45'}\n` +
+                  `Valor em estoque: ${category === 'Ração' ? 'R$ 89.500' : category === 'Petiscos' ? 'R$ 15.670' : 'R$ 22.890'}\n` +
+                  `Giro médio: ${category === 'Ração' ? '15 dias' : category === 'Petiscos' ? '22 dias' : '45 dias'}\n\n` +
+                  `Status:\n` +
+                  `• Em estoque: ${category === 'Ração' ? '98%' : '94%'}\n` +
+                  `• Baixo estoque: ${category === 'Ração' ? '2%' : '6%'}\n` +
+                  `• Fora de estoque: 0%`);
+        }
+
+        // User screen functions
+        function showUserAnalytics(type) {
+            const analytics = {
+                'new': `👤 Novos Usuários\n\n234 novos cadastros este mês\nMeta: 200 (✅ +17%)\n\nOrigem:\n• Busca orgânica: 45%\n• Redes sociais: 32%\n• Indicação: 15%\n• Publicidade: 8%\n\nTaxa de conversão: 12.3%`,
+                'active': `📱 Usuários Ativos\n\n1,089 usuários ativos (30 dias)\nTempo médio de sessão: 8:45\nPáginas por sessão: 4.2\n\nFrequência de uso:\n• Diário: 34%\n• Semanal: 45%\n• Mensal: 21%\n\nEngajamento: Alto`,
+                'retention': `📈 Taxa de Retenção\n\n78% (vs 72% mês anterior)\n\nPor período:\n• 7 dias: 89%\n• 30 dias: 78%\n• 90 dias: 65%\n• 1 ano: 45%\n\nFatores de retenção:\n• Push notifications: +15%\n• Gamificação: +12%`
+            };
+            alert(analytics[type]);
+        }
+
+        function showUserProfile(user) {
+            alert(`👤 Perfil do Usuário\n\n` +
+                  `Nome: ${user.charAt(0).toUpperCase() + user.slice(1)}\n` +
+                  `Status: ${user === 'joão' || user === 'carlos' ? 'Online' : 'Offline'}\n` +
+                  `Plano: ${user === 'joão' ? 'Premium' : 'Gratuito'}\n` +
+                  `Pets: ${user === 'joão' ? '2' : user === 'maria' ? '1' : '3'}\n` +
+                  `Membro desde: ${user === 'joão' ? 'Jan 2024' : 'Mar 2024'}\n\n` +
+                  `Atividade:\n` +
+                  `• Logins este mês: ${user === 'joão' ? '28' : '15'}\n` +
+                  `• Registros de alimentação: ${user === 'joão' ? '156' : '89'}\n` +
+                  `• Uso do scanner: ${user === 'joão' ? '23 vezes' : '12 vezes'}`);
+        }
+
+        // Sales screen functions
+        function showDayDetails(day, value) {
+            alert(`💰 ${day} - ${value}\n\n` +
+                  `Pedidos: ${Math.floor(Math.random() * 50) + 30}\n` +
+                  `Ticket médio: R$ ${Math.floor(Math.random() * 50) + 60}\n` +
+                  `Produtos vendidos: ${Math.floor(Math.random() * 100) + 50}\n\n` +
+                  `Top produtos:\n` +
+                  `• Ração Premium\n` +
+                  `• Petiscos variados\n` +
+                  `• Suplementos vitamínicos\n\n` +
+                  `Horário de pico: ${day.includes('S') ? '14h-16h' : '18h-20h'}`);
+        }
+
+        function showSalesMetric(metric) {
+            const metrics = {
+                'total': `💰 Receita Total\n\nR$ 145.000 este mês\nMeta: R$ 120.000 (✅ +21%)\n\nComparação:\n• Mês anterior: R$ 118.000 (+23%)\n• Mesmo período ano anterior: R$ 95.000 (+53%)\n\nProjeção para o ano: R$ 1.8M`,
+                'orders': `📦 Pedidos\n\n1,847 pedidos realizados\nMédia: 59 pedidos/dia\nTaxa de conversão: 3.2%\n\nDistribuição:\n• Online: 89%\n• Telefone: 7%\n• Presencial: 4%\n\nStatus: 96% entregues`,
+                'average': `🎯 Ticket Médio\n\nR$ 78,50 por pedido\nCrescimento: +8% vs mês anterior\n\nDistribuição:\n• < R$ 50: 35%\n• R$ 50-100: 40%\n• R$ 100-200: 20%\n• > R$ 200: 5%\n\nOportunidade: Upsell em 25% dos pedidos`
+            };
+            alert(metrics[metric]);
+        }
+
+        // Analytics functions
+        function showEngagementDetails(day, sessions) {
+            alert(`📈 ${day} - ${sessions} sessões\n\n` +
+                  `Usuários únicos: ${Math.floor(sessions * 0.8)}\n` +
+                  `Páginas por sessão: ${(Math.random() * 2 + 3).toFixed(1)}\n` +
+                  `Tempo médio: ${Math.floor(Math.random() * 3 + 6)}:${Math.floor(Math.random() * 60).toString().padStart(2, '0')}\n` +
+                  `Taxa de rejeição: ${Math.floor(Math.random() * 10 + 20)}%\n\n` +
+                  `Páginas mais visitadas:\n` +
+                  `• Dashboard: 35%\n` +
+                  `• Pets: 28%\n` +
+                  `• Alimentação: 22%\n` +
+                  `• Relatórios: 15%`);
+        }
+
+        function showAnalyticsDetail(metric) {
+            const details = {
+                'pageviews': `📊 Visualizações\n\n45.200 pageviews\nCrescimento: +15% vs semana anterior\n\nPáginas populares:\n• /dashboard: 12.8K (28%)\n• /pets: 9.5K (21%)\n• /feeding: 8.1K (18%)\n• /reports: 6.2K (14%)\n• /profile: 4.8K (11%)\n• Outras: 3.8K (8%)`,
+                'session': `⏱️ Tempo de Sessão\n\n8:45 tempo médio\nMeta: 7:00 (✅ +25%)\n\nDistribuição:\n• < 2 min: 15%\n• 2-5 min: 25%\n• 5-10 min: 35%\n• > 10 min: 25%\n\nFatores de engajamento:\n• Notificações: +2:15\n• Gamificação: +1:30`,
+                'bounce': `🚪 Taxa de Rejeição\n\n24% taxa de rejeição\nMeta: < 30% (✅ Atingida)\n\nPor página:\n• Landing: 18%\n• Dashboard: 12%\n• Cadastro: 35%\n• Login: 28%\n\nMelhorias implementadas:\n• Loading mais rápido\n• UX otimizada`
+            };
+            alert(details[metric]);
+        }
+
+        // Log functions
+        function showLogDetails(timestamp) {
+            alert(`📋 Log Details\n\n` +
+                  `Timestamp: ${timestamp}\n` +
+                  `Session ID: ${Math.random().toString(36).substr(2, 9)}\n` +
+                  `User Agent: Chrome/91.0.4472.124\n` +
+                  `Referrer: Direct access\n` +
+                  `Duration: ${Math.floor(Math.random() * 20 + 5)} min\n` +
+                  `Actions: ${Math.floor(Math.random() * 15 + 8)}\n\n` +
+                  `Security check: ✅ Passed\n` +
+                  `Geolocation: São Paulo, BR\n` +
+                  `Risk score: Low`);
+        }
+
+        // Utility functions
+        function changeChartPeriod(period) {
+            document.querySelectorAll('.chart-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            alert(`📊 Alterando visualização para: ${period === 'month' ? 'Mensal' : period === 'week' ? 'Semanal' : 'Diária'}\n\n` +
+                  `Dados sendo carregados...`);
+        }
+
+        function openFoodCategories() {
+            window.location.href = 'food-categories.html';
+        }
+
+        function openNewsManagement() {
+            window.location.href = 'news-management.html';
+        }
+
+        function openPushNotifications() {
+            window.location.href = 'news-management.html#push';
+        }
+
+        function logout() {
+            if (confirm('🚪 Deseja sair do painel administrativo?')) {
+                alert('Logout realizado com sucesso!\nRedirecionando para a página de login...');
+                setTimeout(() => {
+                    window.location.href = 'admin-login.html';
+                }, 1500);
+            }
+        }
+
+        // Export functions
+        function toggleExportMenu() {
+            const menu = document.getElementById('export-menu');
+            menu.classList.toggle('active');
+        }
+
+        // Close export menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = event.target.closest('.export-dropdown');
+            if (!dropdown) {
+                document.getElementById('export-menu').classList.remove('active');
+            }
+        });
+
+        async function exportData(format) {
+            document.getElementById('export-menu').classList.remove('active');
+            
+            // Show loading
+            const loadingMsg = document.createElement('div');
+            loadingMsg.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                z-index: 10000;
+                text-align: center;
+            `;
+            loadingMsg.innerHTML = `
+                <div style="width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid #4F46E5; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
+                <div>Exportando dados...</div>
+            `;
+            document.body.appendChild(loadingMsg);
+
+            try {
+                // Simulate export processing
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                const data = generateExportData();
+                
+                switch(format) {
+                    case 'excel':
+                        exportToExcel(data);
+                        break;
+                    case 'pdf':
+                        exportToPDF(data);
+                        break;
+                    case 'csv':
+                        exportToCSV(data);
+                        break;
+                    case 'json':
+                        exportToJSON(data);
+                        break;
+                }
+                
+                alert(`✅ Dados exportados com sucesso em formato ${format.toUpperCase()}!`);
+                
+            } catch (error) {
+                alert('❌ Erro ao exportar dados. Tente novamente.');
+            } finally {
+                document.body.removeChild(loadingMsg);
+            }
+        }
+
+        function generateExportData() {
+            return {
+                summary: {
+                    totalPets: 2847,
+                    activeUsers: 1234,
+                    products: 456,
+                    monthlyRevenue: 145000,
+                    exportDate: new Date().toISOString(),
+                    exportedBy: 'Admin OiPet'
+                },
+                pets: [
+                    { id: 1, name: 'Max', breed: 'Golden Retriever', age: 3, weight: '25kg', owner: 'João Silva', status: 'Ativo' },
+                    { id: 2, name: 'Luna', breed: 'Siamês', age: 2, weight: '4kg', owner: 'Maria Santos', status: 'Ativo' },
+                    { id: 3, name: 'Rex', breed: 'Pastor Alemão', age: 5, weight: '35kg', owner: 'Carlos Lima', status: 'Pendente' },
+                    { id: 4, name: 'Bella', breed: 'Labrador', age: 4, weight: '28kg', owner: 'Ana Costa', status: 'Ativo' },
+                    { id: 5, name: 'Mimi', breed: 'Persa', age: 1, weight: '3kg', owner: 'Paulo Oliveira', status: 'Ativo' }
+                ],
+                users: [
+                    { id: 1, name: 'João Silva', email: 'joao@email.com', pets: 2, joinDate: '2024-01-15', status: 'Ativo' },
+                    { id: 2, name: 'Maria Santos', email: 'maria@email.com', pets: 1, joinDate: '2024-02-20', status: 'Ativo' },
+                    { id: 3, name: 'Carlos Lima', email: 'carlos@email.com', pets: 1, joinDate: '2024-03-10', status: 'Pendente' },
+                    { id: 4, name: 'Ana Costa', email: 'ana@email.com', pets: 3, joinDate: '2024-01-30', status: 'Ativo' }
+                ],
+                products: [
+                    { id: 1, name: 'Royal Canin Golden', category: 'Ração', price: 89.90, stock: 45, sales: 1234 },
+                    { id: 2, name: 'Pedigree Adult', category: 'Ração', price: 54.90, stock: 67, sales: 987 },
+                    { id: 3, name: 'Whiskas Sachê', category: 'Ração Úmida', price: 2.50, stock: 234, sales: 756 },
+                    { id: 4, name: 'Petisco Natural', category: 'Petisco', price: 24.90, stock: 89, sales: 623 }
+                ],
+                sales: [
+                    { date: '2024-07-08', product: 'Royal Canin Golden', quantity: 15, revenue: 1348.50 },
+                    { date: '2024-07-07', product: 'Pedigree Adult', quantity: 22, revenue: 1207.80 },
+                    { date: '2024-07-06', product: 'Whiskas Sachê', quantity: 67, revenue: 167.50 },
+                    { date: '2024-07-05', product: 'Petisco Natural', quantity: 8, revenue: 199.20 }
+                ]
+            };
+        }
+
+        function exportToExcel(data) {
+            // Create workbook content
+            let excelContent = `
+                <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+                <head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>
+                <x:ExcelWorksheet><x:Name>Resumo</x:Name><x:WorksheetSource HRef="sheet1.htm"/></x:ExcelWorksheet>
+                <x:ExcelWorksheet><x:Name>Pets</x:Name><x:WorksheetSource HRef="sheet2.htm"/></x:ExcelWorksheet>
+                <x:ExcelWorksheet><x:Name>Usuários</x:Name><x:WorksheetSource HRef="sheet3.htm"/></x:ExcelWorksheet>
+                <x:ExcelWorksheet><x:Name>Produtos</x:Name><x:WorksheetSource HRef="sheet4.htm"/></x:ExcelWorksheet>
+                </x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>
+                <body>
+                <h2>OiPet - Relatório Administrativo</h2>
+                <h3>Resumo Geral</h3>
+                <table border="1">
+                    <tr><td><b>Total de Pets</b></td><td>${data.summary.totalPets}</td></tr>
+                    <tr><td><b>Usuários Ativos</b></td><td>${data.summary.activeUsers}</td></tr>
+                    <tr><td><b>Produtos</b></td><td>${data.summary.products}</td></tr>
+                    <tr><td><b>Receita Mensal</b></td><td>R$ ${data.summary.monthlyRevenue.toLocaleString()}</td></tr>
+                    <tr><td><b>Data de Exportação</b></td><td>${new Date(data.summary.exportDate).toLocaleString()}</td></tr>
+                </table>
+                
+                <h3>Pets Cadastrados</h3>
+                <table border="1">
+                    <tr><th>ID</th><th>Nome</th><th>Raça</th><th>Idade</th><th>Peso</th><th>Dono</th><th>Status</th></tr>
+                    ${data.pets.map(pet => `<tr><td>${pet.id}</td><td>${pet.name}</td><td>${pet.breed}</td><td>${pet.age}</td><td>${pet.weight}</td><td>${pet.owner}</td><td>${pet.status}</td></tr>`).join('')}
+                </table>
+                
+                <h3>Usuários</h3>
+                <table border="1">
+                    <tr><th>ID</th><th>Nome</th><th>Email</th><th>Pets</th><th>Data de Cadastro</th><th>Status</th></tr>
+                    ${data.users.map(user => `<tr><td>${user.id}</td><td>${user.name}</td><td>${user.email}</td><td>${user.pets}</td><td>${user.joinDate}</td><td>${user.status}</td></tr>`).join('')}
+                </table>
+                
+                <h3>Produtos</h3>
+                <table border="1">
+                    <tr><th>ID</th><th>Nome</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Vendas</th></tr>
+                    ${data.products.map(product => `<tr><td>${product.id}</td><td>${product.name}</td><td>${product.category}</td><td>R$ ${product.price}</td><td>${product.stock}</td><td>${product.sales}</td></tr>`).join('')}
+                </table>
+                </body></html>
+            `;
+            
+            downloadFile(excelContent, 'oipet-relatorio-admin.xls', 'application/vnd.ms-excel');
+        }
+
+        function exportToPDF(data) {
+            // Create HTML content for PDF
+            const pdfContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h1 { color: #4F46E5; text-align: center; }
+                        h2 { color: #06B6D4; border-bottom: 2px solid #06B6D4; padding-bottom: 5px; }
+                        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f8fafc; font-weight: bold; }
+                        .summary { background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; }
+                        .summary-item { display: flex; justify-content: space-between; margin: 10px 0; }
+                    </style>
+                </head>
+                <body>
+                    <h1>🐾 OiPet - Relatório Administrativo</h1>
+                    <div class="summary">
+                        <h2>📊 Resumo Executivo</h2>
+                        <div class="summary-item"><span>Total de Pets Cadastrados:</span><span><strong>${data.summary.totalPets}</strong></span></div>
+                        <div class="summary-item"><span>Usuários Ativos:</span><span><strong>${data.summary.activeUsers}</strong></span></div>
+                        <div class="summary-item"><span>Produtos no Catálogo:</span><span><strong>${data.summary.products}</strong></span></div>
+                        <div class="summary-item"><span>Receita Mensal:</span><span><strong>R$ ${data.summary.monthlyRevenue.toLocaleString()}</strong></span></div>
+                        <div class="summary-item"><span>Data da Exportação:</span><span><strong>${new Date(data.summary.exportDate).toLocaleString()}</strong></span></div>
+                    </div>
+                    
+                    <h2>🐕 Top 5 Pets Cadastrados</h2>
+                    <table>
+                        <thead>
+                            <tr><th>Nome</th><th>Raça</th><th>Idade</th><th>Peso</th><th>Dono</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            ${data.pets.map(pet => `<tr><td>${pet.name}</td><td>${pet.breed}</td><td>${pet.age} anos</td><td>${pet.weight}</td><td>${pet.owner}</td><td>${pet.status}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <h2>👥 Usuários Principais</h2>
+                    <table>
+                        <thead>
+                            <tr><th>Nome</th><th>Email</th><th>Qtd. Pets</th><th>Cadastro</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            ${data.users.map(user => `<tr><td>${user.name}</td><td>${user.email}</td><td>${user.pets}</td><td>${user.joinDate}</td><td>${user.status}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <h2>🛒 Produtos Mais Vendidos</h2>
+                    <table>
+                        <thead>
+                            <tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Vendas</th></tr>
+                        </thead>
+                        <tbody>
+                            ${data.products.map(product => `<tr><td>${product.name}</td><td>${product.category}</td><td>R$ ${product.price}</td><td>${product.stock}</td><td>${product.sales}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top: 40px; text-align: center; color: #718096; font-size: 12px;">
+                        Relatório gerado automaticamente pelo sistema OiPet<br>
+                        Data: ${new Date().toLocaleString()} | Exportado por: ${data.summary.exportedBy}
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            // For a real PDF, you'd use a library like jsPDF or html2pdf
+            downloadFile(pdfContent, 'oipet-relatorio-admin.html', 'text/html');
+            
+            // Show PDF generation info
+            setTimeout(() => {
+                alert('📄 HTML gerado para PDF!\n\nPara converter em PDF:\n1. Abra o arquivo baixado\n2. Use Ctrl+P (Cmd+P no Mac)\n3. Selecione "Salvar como PDF"\n4. Configure as margens como "Mínimas"');
+            }, 1000);
+        }
+
+        function exportToCSV(data) {
+            let csvContent = "OiPet - Relatório Administrativo\\n\\n";
+            
+            // Summary
+            csvContent += "RESUMO GERAL\\n";
+            csvContent += "Métrica,Valor\\n";
+            csvContent += `Total de Pets,${data.summary.totalPets}\\n`;
+            csvContent += `Usuários Ativos,${data.summary.activeUsers}\\n`;
+            csvContent += `Produtos,${data.summary.products}\\n`;
+            csvContent += `Receita Mensal,R$ ${data.summary.monthlyRevenue.toLocaleString()}\\n`;
+            csvContent += `Data de Exportação,${new Date(data.summary.exportDate).toLocaleString()}\\n\\n`;
+            
+            // Pets
+            csvContent += "PETS CADASTRADOS\\n";
+            csvContent += "ID,Nome,Raça,Idade,Peso,Dono,Status\\n";
+            data.pets.forEach(pet => {
+                csvContent += `${pet.id},${pet.name},${pet.breed},${pet.age},${pet.weight},${pet.owner},${pet.status}\\n`;
+            });
+            csvContent += "\\n";
+            
+            // Users
+            csvContent += "USUÁRIOS\\n";
+            csvContent += "ID,Nome,Email,Pets,Data Cadastro,Status\\n";
+            data.users.forEach(user => {
+                csvContent += `${user.id},${user.name},${user.email},${user.pets},${user.joinDate},${user.status}\\n`;
+            });
+            csvContent += "\\n";
+            
+            // Products
+            csvContent += "PRODUTOS\\n";
+            csvContent += "ID,Nome,Categoria,Preço,Estoque,Vendas\\n";
+            data.products.forEach(product => {
+                csvContent += `${product.id},${product.name},${product.category},R$ ${product.price},${product.stock},${product.sales}\\n`;
+            });
+            
+            downloadFile(csvContent, 'oipet-relatorio-admin.csv', 'text/csv');
+        }
+
+        function exportToJSON(data) {
+            const jsonContent = JSON.stringify(data, null, 2);
+            downloadFile(jsonContent, 'oipet-relatorio-admin.json', 'application/json');
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate dashboard cards on load
+            const cards = document.querySelectorAll('.card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.5s ease-out';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

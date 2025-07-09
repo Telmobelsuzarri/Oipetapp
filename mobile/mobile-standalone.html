@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OiPet - Aplicativo Mobile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #4F46E5 0%, #06B6D4 50%, #10B981 100%);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Mobile Container */
+        .mobile-container {
+            max-width: 375px;
+            margin: 20px auto;
+            background: #000;
+            border-radius: 30px;
+            padding: 5px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .mobile-screen {
+            width: 100%;
+            height: 667px;
+            background: #fff;
+            border-radius: 25px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            height: 44px;
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* App Header */
+        .app-header {
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .app-logo {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .app-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .app-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .app-subtitle {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+
+        .welcome-section {
+            padding: 20px;
+            background: white;
+            margin: 10px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .welcome-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            padding: 0 10px;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .action-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            border-color: #4F46E5;
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2);
+        }
+
+        .action-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .action-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .action-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: white;
+            margin: 10px;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stats-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-3px);
+            border-color: #4F46E5;
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2);
+            background: white;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4F46E5;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            height: 70px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background: #f1f5f9;
+        }
+
+        .nav-item.active {
+            color: #4F46E5;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            background: #f8fafc;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes slideInUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideInUp 0.3s ease-out;
+        }
+
+        /* Demo Badge */
+        .demo-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-container">
+        <div class="mobile-screen">
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <span id="time">9:41</span>
+                <span>OiPet</span>
+                <span>100%</span>
+            </div>
+
+            <!-- App Header -->
+            <div class="app-header">
+                <div class="demo-badge">DEMO</div>
+                <div class="app-logo">
+                    <img src="assets/oipet-logo.jpg" alt="OiPet Logo" onerror="this.parentNode.innerHTML='🐾'">
+                </div>
+                <div class="app-title">OiPet</div>
+                <div class="app-subtitle">Nutrição inteligente para seu pet</div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Home Screen -->
+                <div class="screen active" id="home-screen">
+                    <!-- Welcome Section -->
+                    <div class="welcome-section fade-in">
+                        <div class="welcome-title">Bem-vindo ao OiPet! 👋</div>
+                        <div class="welcome-text">
+                            Gerencie a alimentação e saúde dos seus pets de forma inteligente e personalizada.
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <div class="actions-grid">
+                            <div class="action-card" onclick="switchTab('pets')">
+                                <span class="action-icon">🐕</span>
+                                <div class="action-title">Meus Pets</div>
+                                <div class="action-desc">Gerenciar pets</div>
+                            </div>
+                            <div class="action-card" onclick="switchTab('feeding')">
+                                <span class="action-icon">🍽️</span>
+                                <div class="action-title">Alimentação</div>
+                                <div class="action-desc">Registrar refeições</div>
+                            </div>
+                            <div class="action-card" onclick="openReports()">
+                                <span class="action-icon">📊</span>
+                                <div class="action-title">Relatórios</div>
+                                <div class="action-desc">Análises e gráficos</div>
+                            </div>
+                            <div class="action-card" onclick="switchTab('profile')">
+                                <span class="action-icon">👤</span>
+                                <div class="action-title">Perfil</div>
+                                <div class="action-desc">Configurações</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Section -->
+                    <div class="stats-section fade-in">
+                        <div class="stats-title">📈 Estatísticas de Hoje</div>
+                        <div class="stats-grid">
+                            <div class="stat-item" onclick="openReports()">
+                                <div class="stat-value" id="meals-count">3</div>
+                                <div class="stat-label">Refeições</div>
+                            </div>
+                            <div class="stat-item" onclick="openReports()">
+                                <div class="stat-value" id="calories-count">1,250</div>
+                                <div class="stat-label">Calorias</div>
+                            </div>
+                            <div class="stat-item" onclick="openReports()">
+                                <div class="stat-value" id="goal-percent">98%</div>
+                                <div class="stat-label">Meta Atingida</div>
+                            </div>
+                            <div class="stat-item" onclick="switchTab('pets')">
+                                <div class="stat-value" id="pets-count">2</div>
+                                <div class="stat-label">Pets Ativos</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pets Screen -->
+                <div class="screen" id="pets-screen">
+                    <div class="welcome-section">
+                        <div class="welcome-title">🐾 Meus Pets</div>
+                        <div class="welcome-text">Gerencie as informações dos seus companheiros</div>
+                    </div>
+                    <div class="quick-actions">
+                        <div class="action-card" style="grid-column: 1 / -1; margin-bottom: 15px;">
+                            <span class="action-icon">🐕</span>
+                            <div class="action-title">Max - Golden Retriever</div>
+                            <div class="action-desc">3 anos • 25kg • Última refeição: 12:30</div>
+                        </div>
+                        <div class="action-card" style="grid-column: 1 / -1; margin-bottom: 15px;">
+                            <span class="action-icon">🐱</span>
+                            <div class="action-title">Luna - Siamês</div>
+                            <div class="action-desc">2 anos • 4kg • Última refeição: 13:00</div>
+                        </div>
+                        <div class="actions-grid">
+                            <div class="action-card" onclick="addPet()">
+                                <span class="action-icon">➕</span>
+                                <div class="action-title">Adicionar</div>
+                                <div class="action-desc">Novo pet</div>
+                            </div>
+                            <div class="action-card" onclick="petHealth()">
+                                <span class="action-icon">🏥</span>
+                                <div class="action-title">Saúde</div>
+                                <div class="action-desc">Check-up</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feeding Screen -->
+                <div class="screen" id="feeding-screen">
+                    <div class="welcome-section">
+                        <div class="welcome-title">🍽️ Alimentação</div>
+                        <div class="welcome-text">Registre as refeições dos seus pets</div>
+                    </div>
+                    <div class="stats-section">
+                        <div class="stats-title">🕐 Próximas Refeições</div>
+                        <div class="action-card" style="margin-bottom: 15px; text-align: left;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="action-title">Max - Jantar</div>
+                                    <div class="action-desc">18:00 • Ração Premium 200g</div>
+                                </div>
+                                <span class="action-icon">⏰</span>
+                            </div>
+                        </div>
+                        <div class="action-card" style="margin-bottom: 15px; text-align: left;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="action-title">Luna - Ceia</div>
+                                    <div class="action-desc">20:00 • Sachê sabor peixe</div>
+                                </div>
+                                <span class="action-icon">⏰</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="quick-actions">
+                        <div class="actions-grid">
+                            <div class="action-card" onclick="feedPet()">
+                                <span class="action-icon">🥣</span>
+                                <div class="action-title">Registrar</div>
+                                <div class="action-desc">Nova refeição</div>
+                            </div>
+                            <div class="action-card" onclick="scanFood()">
+                                <span class="action-icon">📱</span>
+                                <div class="action-title">Scanner</div>
+                                <div class="action-desc">Escanear produto</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- News Screen -->
+                <div class="screen" id="news-screen">
+                    <div class="welcome-section">
+                        <div class="welcome-title">📰 Dicas e Notícias</div>
+                        <div class="welcome-text">Informações úteis sobre nutrição pet</div>
+                    </div>
+                    <div class="quick-actions">
+                        <div class="action-card" style="grid-column: 1 / -1; margin-bottom: 15px; text-align: left;">
+                            <div class="action-title">🌟 Alimentação no Inverno</div>
+                            <div class="action-desc">Como adaptar a dieta dos pets para o frio</div>
+                        </div>
+                        <div class="action-card" style="grid-column: 1 / -1; margin-bottom: 15px; text-align: left;">
+                            <div class="action-title">🥗 Nova Linha Premium</div>
+                            <div class="action-desc">Descubra os benefícios da ração super premium</div>
+                        </div>
+                        <div class="action-card" style="grid-column: 1 / -1; margin-bottom: 15px; text-align: left;">
+                            <div class="action-title">💊 Suplementos Naturais</div>
+                            <div class="action-desc">Vitaminas essenciais para pets idosos</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Screen -->
+                <div class="screen" id="profile-screen">
+                    <div class="welcome-section">
+                        <div class="welcome-title">👤 Meu Perfil</div>
+                        <div class="welcome-text">Configurações da conta</div>
+                    </div>
+                    <div class="stats-section">
+                        <div class="stats-title">👨‍💼 João Silva</div>
+                        <div class="action-card" style="margin-bottom: 15px; text-align: left;">
+                            <div class="action-desc">📧 joao@email.com</div>
+                            <div class="action-desc">📱 (11) 99999-9999</div>
+                            <div class="action-desc">📅 Membro desde Jan 2024</div>
+                        </div>
+                    </div>
+                    <div class="quick-actions">
+                        <div class="actions-grid">
+                            <div class="action-card" onclick="editProfile()">
+                                <span class="action-icon">✏️</span>
+                                <div class="action-title">Editar</div>
+                                <div class="action-desc">Perfil</div>
+                            </div>
+                            <div class="action-card" onclick="showNotifications()">
+                                <span class="action-icon">🔔</span>
+                                <div class="action-title">Notificações</div>
+                                <div class="action-desc">Configurar</div>
+                            </div>
+                            <div class="action-card" onclick="openAdmin()">
+                                <span class="action-icon">⚙️</span>
+                                <div class="action-title">Admin</div>
+                                <div class="action-desc">Painel</div>
+                            </div>
+                            <div class="action-card" onclick="logout()">
+                                <span class="action-icon">🚪</span>
+                                <div class="action-title">Sair</div>
+                                <div class="action-desc">Logout</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <div class="bottom-nav">
+                <div class="nav-item active" onclick="switchTab('home')">
+                    <div class="nav-icon">🏠</div>
+                    <div class="nav-label">Início</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('pets')">
+                    <div class="nav-icon">🐾</div>
+                    <div class="nav-label">Pets</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('feeding')">
+                    <div class="nav-icon">🍽️</div>
+                    <div class="nav-label">Comida</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('news')">
+                    <div class="nav-icon">📰</div>
+                    <div class="nav-label">Dicas</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('profile')">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">Perfil</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('time').textContent = 
+                now.getHours().toString().padStart(2, '0') + ':' + 
+                now.getMinutes().toString().padStart(2, '0');
+        }
+
+        // Animate stats
+        function animateStats() {
+            const stats = [
+                { id: 'meals-count', target: 3 },
+                { id: 'calories-count', target: 1250, format: n => n.toLocaleString() },
+                { id: 'goal-percent', target: 98, format: n => n + '%' },
+                { id: 'pets-count', target: 2 }
+            ];
+
+            stats.forEach(stat => {
+                let current = 0;
+                const increment = stat.target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= stat.target) {
+                        current = stat.target;
+                        clearInterval(timer);
+                    }
+                    const value = stat.format ? stat.format(Math.floor(current)) : Math.floor(current);
+                    document.getElementById(stat.id).textContent = value;
+                }, 30);
+            });
+        }
+
+        // Show feature alert
+        function showFeature(feature) {
+            alert(`🎉 Funcionalidade: ${feature}\n\nEsta é uma demonstração da interface mobile do OiPet.\n\nRecursos disponíveis:\n• Gestão completa de pets\n• Cálculos nutricionais automáticos\n• Monitoramento de saúde\n• Relatórios detalhados\n• Notificações inteligentes`);
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            // Update navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find and activate the correct nav item
+            const navItems = document.querySelectorAll('.nav-item');
+            const tabMap = ['home', 'pets', 'feeding', 'news', 'profile'];
+            const index = tabMap.indexOf(tab);
+            if (index !== -1 && navItems[index]) {
+                navItems[index].classList.add('active');
+            }
+            
+            // Switch screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            const targetScreen = document.getElementById(tab + '-screen');
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                targetScreen.classList.add('slide-in');
+                
+                // Remove animation class after animation completes
+                setTimeout(() => {
+                    targetScreen.classList.remove('slide-in');
+                }, 300);
+            }
+        }
+
+        // Initialize
+        updateTime();
+        setInterval(updateTime, 1000);
+        
+        // Animate stats after a delay
+        setTimeout(animateStats, 1000);
+
+        // New functionality functions
+        function openReports() {
+            window.location.href = 'reports.html';
+        }
+        
+        function addPet() {
+            alert('➕ Adicionar Novo Pet\n\n' +
+                  'Formulário para cadastrar:\n' +
+                  '• Nome e foto\n' +
+                  '• Raça e idade\n' +
+                  '• Peso e altura\n' +
+                  '• Necessidades especiais\n' +
+                  '• Preferências alimentares');
+        }
+        
+        function petHealth() {
+            alert('🏥 Monitoramento de Saúde\n\n' +
+                  '• Histórico médico\n' +
+                  '• Vacinas e vermífugos\n' +
+                  '• Peso e crescimento\n' +
+                  '• Lembretes veterinários\n' +
+                  '• Sintomas e observações');
+        }
+        
+        function feedPet() {
+            alert('🥣 Registrar Refeição\n\n' +
+                  '• Selecionar pet\n' +
+                  '• Tipo de alimento\n' +
+                  '• Quantidade consumida\n' +
+                  '• Horário da refeição\n' +
+                  '• Observações especiais');
+        }
+        
+        function scanFood() {
+            window.location.href = 'scanner.html';
+        }
+        
+        function editProfile() {
+            alert('✏️ Editar Perfil\n\n' +
+                  '• Informações pessoais\n' +
+                  '• Foto do perfil\n' +
+                  '• Preferências\n' +
+                  '• Configurações de privacidade\n' +
+                  '• Dados de contato');
+        }
+        
+        function showNotifications() {
+            alert('🔔 Configurar Notificações\n\n' +
+                  '• Lembretes de refeição\n' +
+                  '• Alertas de saúde\n' +
+                  '• Dicas nutricionais\n' +
+                  '• Atualizações do app\n' +
+                  '• Frequência e horários');
+        }
+        
+        function openAdmin() {
+            window.location.href = 'admin-login.html';
+        }
+        
+        function logout() {
+            if (confirm('🚪 Deseja sair da sua conta?')) {
+                alert('Logout realizado com sucesso!\nObrigado por usar o OiPet! 🐾');
+            }
+        }
+        
+        // Add some interactivity
+        function addCardInteractivity() {
+            document.querySelectorAll('.action-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        }
+        
+        // Initialize card interactivity after DOM loads
+        setTimeout(addCardInteractivity, 100);
+    </script>
+</body>
+</html>

@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OiPet - Relatórios Dinâmicos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #4F46E5 0%, #06B6D4 50%, #10B981 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .reports-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .header-subtitle {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #4F46E5;
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.3);
+            background: white;
+        }
+
+        .stat-card.clicked {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(6, 182, 212, 0.1));
+            border-color: #06B6D4;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4F46E5;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .chart-container.active {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .chart {
+            width: 100%;
+            height: 200px;
+            background: #f8fafc;
+            border-radius: 10px;
+            display: flex;
+            align-items: end;
+            justify-content: space-around;
+            padding: 20px 10px 10px;
+            position: relative;
+        }
+
+        .bar {
+            width: 30px;
+            background: linear-gradient(to top, #4F46E5, #06B6D4);
+            border-radius: 15px 15px 0 0;
+            transition: all 0.5s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .bar:hover {
+            opacity: 0.8;
+            transform: scale(1.1);
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: bold;
+            color: #333;
+            background: white;
+            padding: 2px 6px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .bar:hover .bar-value {
+            opacity: 1;
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .activity-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .activity-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .activity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .activity-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-3px);
+            border-color: #06B6D4;
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.2);
+            background: white;
+        }
+
+        .activity-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #06B6D4;
+            margin-bottom: 5px;
+        }
+
+        .activity-label {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .line-chart {
+            width: 100%;
+            height: 150px;
+            background: #f8fafc;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .line-path {
+            stroke: #06B6D4;
+            stroke-width: 3;
+            fill: none;
+            stroke-linecap: round;
+            animation: drawLine 2s ease-out;
+        }
+
+        .line-area {
+            fill: url(#lineGradient);
+            opacity: 0.3;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #4F46E5, #06B6D4);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .back-button:hover {
+            background: linear-gradient(135deg, #3730A3, #0284C7);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes drawLine {
+            from { stroke-dasharray: 1000; stroke-dashoffset: 1000; }
+            to { stroke-dasharray: 1000; stroke-dashoffset: 0; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="reports-container">
+        <div class="header">
+            <div class="header-logo">
+                <img src="assets/oipet-logo.jpg" alt="OiPet Logo" onerror="this.parentNode.innerHTML='🐾'">
+            </div>
+            <div class="header-title">Relatórios Dinâmicos</div>
+            <div class="header-subtitle">Análises interativas dos seus pets</div>
+        </div>
+
+        <div class="content">
+            <!-- Stats Overview -->
+            <div class="stats-overview">
+                <div class="stat-card" onclick="showChart('nutrition')" data-type="nutrition">
+                    <div class="stat-number" id="nutrition-count">1,250</div>
+                    <div class="stat-label">Calorias/dia</div>
+                </div>
+                <div class="stat-card" onclick="showChart('meals')" data-type="meals">
+                    <div class="stat-number" id="meals-count">18</div>
+                    <div class="stat-label">Refeições/semana</div>
+                </div>
+                <div class="stat-card" onclick="showChart('weight')" data-type="weight">
+                    <div class="stat-number" id="weight-count">29kg</div>
+                    <div class="stat-label">Peso Total</div>
+                </div>
+                <div class="stat-card" onclick="showChart('health')" data-type="health">
+                    <div class="stat-number" id="health-count">98%</div>
+                    <div class="stat-label">Saúde Geral</div>
+                </div>
+            </div>
+
+            <!-- Dynamic Charts -->
+            <div class="chart-container" id="nutrition-chart">
+                <div class="chart-title">📊 Calorias por Dia</div>
+                <div class="chart">
+                    <div class="bar" style="height: 80%;" onclick="showBarDetails('Dom', '1,100')">
+                        <div class="bar-value">1,100</div>
+                        <div class="bar-label">Dom</div>
+                    </div>
+                    <div class="bar" style="height: 90%;" onclick="showBarDetails('Seg', '1,200')">
+                        <div class="bar-value">1,200</div>
+                        <div class="bar-label">Seg</div>
+                    </div>
+                    <div class="bar" style="height: 95%;" onclick="showBarDetails('Ter', '1,250')">
+                        <div class="bar-value">1,250</div>
+                        <div class="bar-label">Ter</div>
+                    </div>
+                    <div class="bar" style="height: 85%;" onclick="showBarDetails('Qua', '1,150')">
+                        <div class="bar-value">1,150</div>
+                        <div class="bar-label">Qua</div>
+                    </div>
+                    <div class="bar" style="height: 100%;" onclick="showBarDetails('Qui', '1,300')">
+                        <div class="bar-value">1,300</div>
+                        <div class="bar-label">Qui</div>
+                    </div>
+                    <div class="bar" style="height: 88%;" onclick="showBarDetails('Sex', '1,180')">
+                        <div class="bar-value">1,180</div>
+                        <div class="bar-label">Sex</div>
+                    </div>
+                    <div class="bar" style="height: 92%;" onclick="showBarDetails('Sáb', '1,220')">
+                        <div class="bar-value">1,220</div>
+                        <div class="bar-label">Sáb</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container" id="meals-chart">
+                <div class="chart-title">🍽️ Refeições por Dia</div>
+                <div class="chart">
+                    <div class="bar" style="height: 60%;" onclick="showBarDetails('Dom', '2')">
+                        <div class="bar-value">2</div>
+                        <div class="bar-label">Dom</div>
+                    </div>
+                    <div class="bar" style="height: 90%;" onclick="showBarDetails('Seg', '3')">
+                        <div class="bar-value">3</div>
+                        <div class="bar-label">Seg</div>
+                    </div>
+                    <div class="bar" style="height: 90%;" onclick="showBarDetails('Ter', '3')">
+                        <div class="bar-value">3</div>
+                        <div class="bar-label">Ter</div>
+                    </div>
+                    <div class="bar" style="height: 60%;" onclick="showBarDetails('Qua', '2')">
+                        <div class="bar-value">2</div>
+                        <div class="bar-label">Qua</div>
+                    </div>
+                    <div class="bar" style="height: 90%;" onclick="showBarDetails('Qui', '3')">
+                        <div class="bar-value">3</div>
+                        <div class="bar-label">Qui</div>
+                    </div>
+                    <div class="bar" style="height: 90%;" onclick="showBarDetails('Sex', '3')">
+                        <div class="bar-value">3</div>
+                        <div class="bar-label">Sex</div>
+                    </div>
+                    <div class="bar" style="height: 60%;" onclick="showBarDetails('Sáb', '2')">
+                        <div class="bar-value">2</div>
+                        <div class="bar-label">Sáb</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container" id="weight-chart">
+                <div class="chart-title">⚖️ Evolução do Peso</div>
+                <svg class="line-chart" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#06B6D4;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#06B6D4;stop-opacity:0.1" />
+                        </linearGradient>
+                    </defs>
+                    <path class="line-area" d="M 30 120 L 80 110 L 130 100 L 180 95 L 230 90 L 270 85 L 270 130 L 30 130 Z"/>
+                    <path class="line-path" d="M 30 120 L 80 110 L 130 100 L 180 95 L 230 90 L 270 85"/>
+                    <circle cx="30" cy="120" r="4" fill="#06B6D4" onclick="showPointDetails('Jan', '26kg')"/>
+                    <circle cx="80" cy="110" r="4" fill="#06B6D4" onclick="showPointDetails('Fev', '27kg')"/>
+                    <circle cx="130" cy="100" r="4" fill="#06B6D4" onclick="showPointDetails('Mar', '28kg')"/>
+                    <circle cx="180" cy="95" r="4" fill="#06B6D4" onclick="showPointDetails('Abr', '28.5kg')"/>
+                    <circle cx="230" cy="90" r="4" fill="#06B6D4" onclick="showPointDetails('Mai', '29kg')"/>
+                    <circle cx="270" cy="85" r="4" fill="#4F46E5" onclick="showPointDetails('Jun', '29.5kg')"/>
+                </svg>
+            </div>
+
+            <div class="chart-container" id="health-chart">
+                <div class="chart-title">🏥 Indicadores de Saúde</div>
+                <div class="chart">
+                    <div class="bar" style="height: 95%;" onclick="showBarDetails('Energia', '95%')">
+                        <div class="bar-value">95%</div>
+                        <div class="bar-label">Energia</div>
+                    </div>
+                    <div class="bar" style="height: 100%;" onclick="showBarDetails('Apetite', '100%')">
+                        <div class="bar-value">100%</div>
+                        <div class="bar-label">Apetite</div>
+                    </div>
+                    <div class="bar" style="height: 98%;" onclick="showBarDetails('Hidratação', '98%')">
+                        <div class="bar-value">98%</div>
+                        <div class="bar-label">Hidrat.</div>
+                    </div>
+                    <div class="bar" style="height: 90%;" onclick="showBarDetails('Sono', '90%')">
+                        <div class="bar-value">90%</div>
+                        <div class="bar-label">Sono</div>
+                    </div>
+                    <div class="bar" style="height: 96%;" onclick="showBarDetails('Humor', '96%')">
+                        <div class="bar-value">96%</div>
+                        <div class="bar-label">Humor</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Physical Activity Section -->
+            <div class="activity-section">
+                <div class="activity-title">🏃‍♂️ Atividade Física</div>
+                <div class="activity-grid">
+                    <div class="activity-card" onclick="showActivityChart('steps')">
+                        <div class="activity-value" id="steps-count">8,420</div>
+                        <div class="activity-label">Passos Hoje</div>
+                    </div>
+                    <div class="activity-card" onclick="showActivityChart('exercise')">
+                        <div class="activity-value" id="exercise-count">45min</div>
+                        <div class="activity-label">Exercício</div>
+                    </div>
+                    <div class="activity-card" onclick="showActivityChart('calories')">
+                        <div class="activity-value" id="calories-burned">320</div>
+                        <div class="activity-label">Cal. Queimadas</div>
+                    </div>
+                    <div class="activity-card" onclick="showActivityChart('distance')">
+                        <div class="activity-value" id="distance-count">3.2km</div>
+                        <div class="activity-label">Distância</div>
+                    </div>
+                </div>
+                
+                <!-- Activity Chart -->
+                <div class="line-chart" id="activity-graph" style="display: none;">
+                    <svg viewBox="0 0 300 150">
+                        <defs>
+                            <linearGradient id="activityGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#4F46E5;stop-opacity:0.1" />
+                            </linearGradient>
+                        </defs>
+                        <path class="line-area" d="M 30 130 L 80 100 L 130 80 L 180 70 L 230 60 L 270 50 L 270 130 L 30 130 Z" fill="url(#activityGradient)"/>
+                        <path class="line-path" d="M 30 130 L 80 100 L 130 80 L 180 70 L 230 60 L 270 50" stroke="#4F46E5"/>
+                    </svg>
+                </div>
+            </div>
+
+            <button class="back-button" onclick="goBack()">
+                🏠 Voltar ao App Principal
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let currentChart = null;
+
+        function showChart(type) {
+            // Hide all charts
+            document.querySelectorAll('.chart-container').forEach(chart => {
+                chart.classList.remove('active');
+            });
+
+            // Remove clicked state from all cards
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.classList.remove('clicked');
+            });
+
+            // Show selected chart
+            const targetChart = document.getElementById(type + '-chart');
+            if (targetChart) {
+                targetChart.classList.add('active');
+                currentChart = type;
+            }
+
+            // Add clicked state to selected card
+            const clickedCard = document.querySelector(`[data-type="${type}"]`);
+            if (clickedCard) {
+                clickedCard.classList.add('clicked');
+                clickedCard.classList.add('pulse');
+                setTimeout(() => clickedCard.classList.remove('pulse'), 2000);
+            }
+
+            // Animate bars
+            setTimeout(() => {
+                const bars = targetChart.querySelectorAll('.bar');
+                bars.forEach((bar, index) => {
+                    setTimeout(() => {
+                        bar.style.transform = 'scaleY(1)';
+                        bar.style.opacity = '1';
+                    }, index * 100);
+                });
+            }, 300);
+        }
+
+        function showBarDetails(label, value) {
+            const messages = {
+                'nutrition': `📊 Detalhes de ${label}\n\nCalorias: ${value}\nRecomendado: 1,200-1,400 cal/dia\nStatus: ${parseInt(value.replace(',', '')) > 1200 ? '✅ Adequado' : '⚠️ Abaixo do ideal'}\n\nFonte principal:\n• Ração: 70%\n• Petiscos: 20%\n• Suplementos: 10%`,
+                'meals': `🍽️ Detalhes de ${label}\n\nRefeições: ${value}\nRecomendado: 2-3 refeições/dia\nStatus: ${parseInt(value) >= 2 ? '✅ Adequado' : '⚠️ Insuficiente'}\n\nTipos de refeição:\n• Manhã: Ração seca\n• Tarde: Sachê úmido\n• Noite: Ração + petisco`,
+                'weight': `⚖️ Evolução do Peso\n\nMês: ${label}\nPeso: ${value}\nMeta: 30kg\nStatus: ${parseFloat(value) < 30 ? '✅ No alvo' : '⚠️ Acima da meta'}\n\nTendência: 📈 Crescimento saudável\nPróxima pesagem: Em 1 semana`,
+                'health': `🏥 Indicador: ${label}\n\nNível: ${value}\nStatus: ${parseInt(value) >= 90 ? '✅ Excelente' : parseInt(value) >= 70 ? '⚠️ Bom' : '❌ Atenção'}\n\nÚltima avaliação: Hoje\nPróximo check-up: Em 2 semanas\nObservações: Nenhuma anormalidade`
+            };
+
+            alert(messages[currentChart] || `Detalhes de ${label}: ${value}`);
+        }
+
+        function showPointDetails(month, weight) {
+            alert(`⚖️ Peso em ${month}\n\nPeso registrado: ${weight}\nVariação: ${month === 'Jun' ? '+0.5kg' : '+1kg'} vs mês anterior\nStatus: 📈 Crescimento normal\n\nObservações:\n• Dieta balanceada\n• Exercícios regulares\n• Saúde em dia`);
+        }
+
+        function showActivityChart(type) {
+            const activityGraph = document.getElementById('activity-graph');
+            
+            if (activityGraph.style.display === 'none') {
+                activityGraph.style.display = 'block';
+                activityGraph.style.animation = 'slideIn 0.5s ease-out';
+            }
+
+            // Remove clicked state from all activity cards
+            document.querySelectorAll('.activity-card').forEach(card => {
+                card.classList.remove('clicked');
+            });
+
+            // Add clicked state to selected card
+            event.target.closest('.activity-card').classList.add('clicked');
+
+            const messages = {
+                'steps': '🚶‍♂️ Análise de Passos\n\n8,420 passos hoje\nMeta: 8,000 passos\nStatus: ✅ Meta atingida!\n\nEvolução semanal:\n• Média: 7,800 passos/dia\n• Melhor dia: 9,200 passos\n• Tendência: 📈 +15%',
+                'exercise': '🏃‍♂️ Tempo de Exercício\n\n45 minutos hoje\nMeta: 30-60 min/dia\nStatus: ✅ Ideal\n\nAtividades:\n• Caminhada: 30 min\n• Brincadeiras: 15 min\n• Intensidade: Moderada',
+                'calories': '🔥 Calorias Queimadas\n\n320 calorias hoje\nMeta: 250-400 cal/dia\nStatus: ✅ Perfeito\n\nDistribuição:\n• Caminhada: 200 cal\n• Brincadeiras: 80 cal\n• Atividades: 40 cal',
+                'distance': '📏 Distância Percorrida\n\n3.2km hoje\nMeta: 2-4 km/dia\nStatus: ✅ Excelente\n\nPercursos:\n• Parque: 2.1km\n• Quintal: 0.8km\n• Casa: 0.3km'
+            };
+
+            setTimeout(() => {
+                alert(messages[type]);
+            }, 300);
+        }
+
+        function goBack() {
+            if (confirm('🏠 Voltar ao aplicativo principal?')) {
+                window.location.href = 'mobile-standalone.html';
+            }
+        }
+
+        // Initialize with animation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate stat numbers on load
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach(stat => {
+                const originalValue = stat.textContent;
+                stat.textContent = '0';
+                
+                setTimeout(() => {
+                    stat.style.transition = 'all 1s ease-out';
+                    stat.textContent = originalValue;
+                }, 500);
+            });
+
+            // Animate activity values
+            const activityValues = document.querySelectorAll('.activity-value');
+            activityValues.forEach((value, index) => {
+                setTimeout(() => {
+                    value.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        value.style.transform = 'scale(1)';
+                    }, 200);
+                }, index * 200);
+            });
+        });
+
+        // Add click animation to cards
+        document.querySelectorAll('.stat-card, .activity-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+    </script>
+</body>
+</html>
